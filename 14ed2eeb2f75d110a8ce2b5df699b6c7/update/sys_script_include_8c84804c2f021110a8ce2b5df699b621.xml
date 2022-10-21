@@ -312,13 +312,10 @@ MyAppImportSetReport.prototype = {
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-09-15 02:19:48</sys_created_on>
         <sys_id>8c84804c2f021110a8ce2b5df699b621</sys_id>
-        <sys_mod_count>139</sys_mod_count>
         <sys_name>MyAppImportSetReport</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_8c84804c2f021110a8ce2b5df699b621</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
-        <sys_updated_on>2022-09-20 13:45:49</sys_updated_on>
     </sys_script_include>
 </record_update>
