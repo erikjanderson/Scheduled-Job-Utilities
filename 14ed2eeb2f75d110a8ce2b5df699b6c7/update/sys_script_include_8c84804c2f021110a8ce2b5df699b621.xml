@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.MyAppImportSetReport</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>MyAppImportSetReport</name>
+        <script><![CDATA[var MyAppImportSetReport = Class.create();
+MyAppImportSetReport.prototype = {
+    initialize: function(importSet) {
+        if (typeof importSet === 'string') {
+            importSet = this._getSetGr(importSet);
+        }
+        if (importSet + '' === '[object GlideRecord]') {
+            this._initializeModel(importSet);
+        } else if (importSet + '' === '[object Object]') {
+            this._setModelFromObj(importSet);
+        }
+    },
+
+    refresh: function() {
+        if (!this.sysId) {
+            return;
+        }
+        this.report = {};
+        this.states = this._getImportSetState(this.sysId, this.type);
+        if (this.states.loading > 0 || this.states.loaded > 0) {
+            this.inProgress = true;
+        } else {
+            this.inProgress = false;
+        }
+        var progressReport = this._getImportSetRowReport(this.sysId, this.type);
+        if (progressReport) {
+            this.report = progressReport;
+        }
+    },
+
+    interrogateProgress: function() {
+        //Performs a more detailed check to determine if the job execution is really in progress
+        if (!this.sysId || !this.type) {
+            return;
+        }
+        var inProgress = false;
+        var progressState = '';
+        var importSetGr = this._getImportSets(this.sysId, this.type);
+        while (importSetGr.next()) {
+            var state = importSetGr.getValue('state');
+            if (state === 'loading') {
+                var loadingImportSetResults = this._interrogateLoadingImportSet(importSetGr);
+                if (loadingImportSetResults && loadingImportSetResults.inProgress) {
+                    inProgress = loadingImportSetResults.inProgress;
+                    progressState = loadingImportSetResults.progressState;
+                }
+            } else {
+                var loadedImportSetResults = this._interrogateLoadedImportSet(importSetGr);
+                if (loadedImportSetResults && loadedImportSetResults.inProgress) {
+                    inProgress = loadedImportSetResults.inProgress;
+                    progressState = loadedImportSetResults.progressState;
+                }
+            }
+            if (inProgress) {
+                break;
+            }
+        }
+
+        this.inProgress = inProgress;
+        this.progressInterrogated = true;
+    },
+
+    //Internal Functions
+
+    _setModelFromObj: function(importSet) {
+        for (var key in importSet) {
+            this[key] = importSet[key];
+        }
+		var setStartTime = new GlideDateTime();
+		setStartTime.setDisplayValue(this.startTime);
+        var gdt = new GlideDateTime();
+        this.age = GlideDateTime.subtract(setStartTime, gdt).getDisplayValue();
+    },
+
+    _initializeModel: function(importSetGr) {
+        if (!importSetGr) {
+            return;
+        }
+        this.sysId = importSetGr.getUniqueValue();
+        this.display = importSetGr.getDisplayValue();
+        this.type = importSetGr.getRecordClassName();
+        this.link = importSetGr.getLink();
+        var setStartTime = new GlideDateTime(importSetGr.getValue('sys_created_on'));
+        var gdt = new GlideDateTime();
+        this.startTime = setStartTime.getDisplayValue();
+        this.age = GlideDateTime.subtract(setStartTime, gdt).getDisplayValue();
+    },
+
+    _getMostRecentExecution: function(scheduledImportId) {
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('scheduled_import', scheduledImportId);
+        executionGr.orderByDesc('sys_created_on');
+        executionGr.setLimit(1);
+        executionGr.query();
+        if (executionGr.next()) {
+            return executionGr;
+        }
+    },
+
+    _getImportSetRowReport: function(importSetId, importSetTable) {
+        if (!importSetId || !importSetTable) {
+            return;
+        }
+        var progressReport = {
+            total: 0,
+            finished: 0,
+            processed: 0,
+            pending: 0,
+            error: 0,
+            inserted: 0,
+            ignored: 0
+        };
+
+        var importSetRowGa = new GlideAggregate('sys_import_set_row');
+        if (importSetTable === 'sys_import_set') {
+            importSetRowGa.addQuery('sys_import_set', importSetId);
+        } else {
+            importSetRowGa.addQuery('sys_import_set.concurrent_import_set', importSetId);
+        }
+
+        importSetRowGa.addAggregate('COUNT', 'sys_import_state');
+        //importSetRowGa.orderBy('state');
+        importSetRowGa.query();
+        while (importSetRowGa.next()) {
+            var count = parseInt(importSetRowGa.getAggregate('COUNT', 'sys_import_state'));
+            var state = importSetRowGa.getValue('sys_import_state');
+            progressReport[state] = count;
+            progressReport.total += count;
+            if (state != 'pending') {
+                progressReport.finished += count;
+            }
+        }
+        return progressReport;
+    },
+
+    _getMostRecentImportSetRow: function(importSetId) {
+        var importSetRowGr = new GlideRecord('sys_import_set_row');
+        importSetRowGr.addQuery('sys_import_set', importSetId);
+        importSetRowGr.orderByDesc('sys_created_on');
+        importSetRowGr.setLimit(1);
+        importSetRowGr.query();
+        if (importSetRowGr.next()) {
+            return importSetRowGr;
+        }
+    },
+
+    _getImportSetState: function(importSetId, importSetTable) {
+        if (!importSetId || !importSetTable) {
+            return;
+        }
+        var states = {};
+        if (importSetTable == 'sys_import_set') {
+            var importSetGr = new GlideRecord('sys_import_set');
+            if (importSetGr.get(importSetId)) {
+                var state = importSetGr.getValue('state');
+                states.total = 1;
+                states[state] = 1;
+            }
+        } else if (importSetTable == 'sys_concurrent_import_set') {
+            var importSetGa = new GlideAggregate('sys_import_set');
+            importSetGa.addQuery('concurrent_import_set', importSetId);
+            importSetGa.addAggregate('COUNT', 'state');
+            importSetGa.query();
+            while (importSetGa.next()) {
+                var count = parseInt(importSetGa.getAggregate('COUNT', 'state'));
+                var state = importSetGa.getValue('state');
+                if (gs.nil(states.total)) {
+                    states.total = 0;
+                }
+                states.total += count;
+                states[state] = count;
+            }
+        }
+        return states;
+    },
+
+    _getImportSets: function(importSetId, table) {
+        var importSetGr = new GlideRecord('sys_import_set');
+        importSetGr.orderBy('sys_created_on');
+        importSetGr.addEncodedQuery('state!=processed^state!=cancelled');
+        if (table === 'sys_concurrent_import_set') {
+            importSetGr.addQuery('concurrent_import_set', importSetId);
+        } else {
+            importSetGr.addQuery('sys_id', importSetId);
+        }
+        importSetGr.query();
+        return importSetGr;
+    },
+
+	_getSetGr: function(setId){
+		var importSetGr = new GlideRecord('sys_import_set');
+		if(importSetGr.get(setId)){
+			return importSetGr;
+		}
+		var concurrentImportSetGr = new GlideRecord('sys_concurrent_import_set')
+		if(concurrentImportSetGr.get(setId)){
+			return concurrentImportSetGr
+		}
+	},
+
+    _interrogateLoadingImportSet: function(importSetGr) {
+        var importSetRowGr = this._getMostRecentImportSetRow(importSetGr.getUniqueValue());
+        if (importSetRowGr) {
+            var rowCreatedGDT = new GlideDateTime(importSetRowGr.getValue('sys_created_on'));
+            if (this._isYoung(rowCreatedGDT)) {
+                return {
+                    inProgress: true,
+                    progressState: 'New data is being loaded into staging.'
+                };
+            }
+        }
+        if (!inProgress) {
+            var importSetCreatedGDT = new GlideDateTime(importSetGr.getValue('sys_created_on'));
+            if (this._isYoung(importSetCreatedGDT)) {
+                return {
+                    inProgress: true,
+                    progressState: 'Import set was just created and data will start loading in soon.'
+                };
+            }
+        }
+    },
+
+    _interrogateLoadedImportSet: function(importSetGr) {
+        var loadCompleteGDT = new GlideDateTime(importSetGr.getValue('load_completed'));
+        if (this._isYoung(loadCompleteGDT)) {
+            return {
+                inProgress: true,
+                progressState: 'Loading Completed.'
+            };
+        }
+        if (this.report || this.report.finished) {
+            this.refresh();
+        }
+        var startCount = this.report.finished;
+        for (var i = 0; i < 30; i++) {
+            this.refresh();
+            if (startCount != this.report.finished) {
+                return {
+                    inProgress: true,
+                    progressState: 'Rows are being transformed.'
+                };
+            }
+            this._wait(1);
+        }
+    },
+
+    _getRefRecord: function(gr, column) {
+        var ref = {};
+        ref.sysId = gr.getValue(column);
+        ref.display = gr[column].getDisplayValue();
+        return ref;
+    },
+
+    _isYoung: function(compareTimeGDT) {
+        if (compareTimeGDT) {
+            var currentGDT = new GlideDateTime();
+            currentGDT.addSeconds(-30);
+            var currentTimeNumeric = currentGDT.getNumericValue();
+            var compareTimeNumeric = compareTimeGDT.getNumericValue();
+            if (currentTimeNumeric < compareTimeNumeric) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    _wait: function(seconds) {
+        var ms = seconds * 1000;
+        var unixtime_ms = new Date().getTime();
+        while (new Date().getTime() < unixtime_ms + ms) {}
+    },
+
+
+    //VVVVVVVVVV Not Using VVVVVVVVVV
+    // _getLatestExecutionFromContext: function (executionContextId) {
+    // 	var executionGr = new GlideRecord('sys_import_set_execution');
+    // 	executionGr.addQuery('execution_context', executionContextId);
+    // 	executionGr.orderByDesc('sys_created_on');
+    // 	executionGr.setLimit(1);
+    // 	executionGr.query();
+    // 	if (executionGr.next()) {
+    // 		return executionGr;
+    // 	}
+    // },
+
+
+    // _getJobRelationship: function (scheduledImportGr, scheduledImportId) {
+    // 	var jobRel = 'None';
+    // 	var jobType = scheduledImportGr.getValue('run_type');
+    // 	if (jobType === 'parent' && scheduledImportGr.getValue('parent') === scheduledImportId) {
+    // 		jobRel = 'Child'
+    // 	} else if (scheduledImportGr.getUniqueValue() != scheduledImportId) {
+    // 		jobRel = 'Sibling'
+    // 	}
+    // 	return jobRel;
+    // },
+
+
+
+    type: 'MyAppImportSetReport'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-09-15 02:19:48</sys_created_on>
+        <sys_id>8c84804c2f021110a8ce2b5df699b621</sys_id>
+        <sys_mod_count>139</sys_mod_count>
+        <sys_name>MyAppImportSetReport</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_8c84804c2f021110a8ce2b5df699b621</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-09-20 13:45:49</sys_updated_on>
+    </sys_script_include>
+</record_update>
