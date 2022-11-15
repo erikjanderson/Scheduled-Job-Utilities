@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.MyAppScheduledJobUtils</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Utility script to determine the status and overall progress of scheduled jobs</description>
+        <name>MyAppScheduledJobUtils</name>
+        <script><![CDATA[var MyAppScheduledJobUtils = Class.create();
+MyAppScheduledJobUtils.prototype = {
+    initialize: function () {
+    },
+
+
+
+    getJobStatus: function (scheduledJobId) {
+        var recentExecutionGr = this._getMostRecentExecution(scheduledJobId);
+        if (!recentExecutionGr) { return; }
+        var executionContextId = recentExecutionGr.getValue('execution_context');
+        var executionGr = this._getLatestExecutionFromContext(executionContextId);
+        if (!executionGr) { return; }
+        var obj = {};
+        obj.jobInfo = this._getActiveJobInfo(executionGr, scheduledJobId);
+        obj.importProgress = this._getImportSetProgress(executionGr.import_set.getRefRecord());
+        gs.info(JSON.stringify(obj));
+    },
+
+
+    checkIfImportRunning: function (scheduledJobId, checkExecutionCreateTime) {
+        var importStatus = this._ImportStatus(false, '');
+        var recentExecutionGr = this._getMostRecentExecution(scheduledJobId);
+        if (!recentExecutionGr) {
+            return importStatus;
+        }
+        var executionContextId = recentExecutionGr.getValue('execution_context');
+        var executionGr = this._getExecutionsFromContext(executionContextId);
+        while (executionGr.next()) {
+            if (checkExecutionCreateTime) {
+                //Check if execution is recent
+                var executionGDT = new GlideDateTime(executionGr.getValue('sys_created_on'));
+                if (this._isYoung(executionGDT)) {
+                    importStatus = this._ImportStatus(true, 'Staring');
+                    break;
+                }
+            }
+            importStatus = this._checkImportSetProgress(executionGr.getValue('import_set'), executionGr.getValue('table'));
+        }
+        return importStatus;
+    },
+
+   
+
+
+    //Internal Functions
+
+    _getActiveJobInfo: function (executionGr, scheduledJobId) {
+        var scheduledImportGr = executionGr.scheduled_import.getRefRecord();
+        var jobRel = 'None';
+        var jobType = scheduledImportGr.getValue('run_type');
+        if (jobType === 'parent' && scheduledImportGr.getValue('parent') === scheduledJobId) {
+            jobRel = 'Child'
+        } else {
+            jobRel = 'Sibling'
+        }
+        var executionTime = executionGr.getValue('sys_created_on');
+        var executionStartTime = new GlideDateTime(executionTime);
+        var gdt = new GlideDateTime();
+        var diff = GlideDateTime.subtract(executionStartTime, gdt);
+
+        var jobInfo = {
+            id: executionGr.getValue('scheduled_import'),
+            name: scheduledImportGr.getValue('name'),
+            jobRelationship: jobRel,
+            jobExecutionTime: executionStartTime.getDisplayValue(),
+            jobExecutionAge: diff.getDisplayValue(),
+        }
+        return jobInfo;
+    },
+
+
+
+    _getImportSetProgress: function (importSetGr) {
+        var  setProgress = {};
+        setProgress.id = importSetGr.getUniqueValue();
+        setProgress.table = importSetGr.getRecordClassName();
+        setProgress.report = {}
+        setProgress.report = this._getImportReport(importSetGr, setProgress.table);
+        //var importSetGr = this._getImportSets(importSetGr.getUniqueValue(), setProgress.table);
+
+        return setProgress;
+    },
+
+
+    _getImportReport: function (importSetGr, importSetTable) {
+        if (!importSetGr || !importSetTable) { return }
+        var progressReport = {
+            state: importSetGr.getDisplayValue('state'),
+            total: 0,
+            finished: 0,
+            pending: 0,
+            error: 0,
+            inserted: 0,
+            ignored: 0
+        };
+
+        var importSetRowGa = new GlideAggregate('sys_import_set_row');
+        if (importSetTable === 'sys_import_set') {
+            importSetRowGa.addQuery('sys_import_set', importSetGr.getUniqueValue());
+        } else {
+            importSetRowGa.addQuery('sys_import_set.concurrent_import_set', importSetGr.getUniqueValue());
+        }
+
+        //importSetGr.addQuery('sys_import_set.concurrent_import_set', importSetId);
+        importSetRowGa.addAggregate('COUNT', 'sys_import_state');
+        importSetRowGa.orderBy('state');
+        importSetRowGa.query();
+        while (importSetRowGa.next()) {
+            var count = parseInt(importSetRowGa.getAggregate('COUNT', 'sys_import_state'));
+            var state = importSetRowGa.getValue('sys_import_state');
+            progressReport[state] = count;
+            progressReport.total += count;
+            if (state != 'pending') {
+                progressReport.finished += count;
+            }
+        }
+        return progressReport;
+
+
+    },
+
+    _checkImportSetProgress: function (importSetId, table) {
+        var importSetGr = this._getImportSets(importSetId, table);
+        gs.debug("Import sets to check: " + importSetGr.getRowCount());
+        while (importSetGr.next()) {
+            var state = importSetGr.getValue('state');
+            gs.debug('Import Set' + importSetGr.getDisplayValue() + ' is ' + state);
+            if (state === 'loading') {
+                var importSetCreatedGDT = new GlideDateTime(importSetGr.getValue('sys_created_on'));
+                if (this._isYoung(importSetCreatedGDT)) {
+                    return this._ImportStatus(true, 'Loading');
+                }
+                var importSetRowGr = this._getMostRecentImportSetRow(importSetGr.getUniqueValue());
+                if (importSetRowGr) {
+                    var rowCreatedGDT = new GlideDateTime(importSetRowGr.getValue('sys_created_on'));
+                    if (this._isYoung(rowCreatedGDT)) {
+                        return this._ImportStatus(true, 'Loading');
+                    }
+                }
+            } else {
+                var loadCompleteGDT = new GlideDateTime(importSetGr.getValue('load_completed'));
+                if (this._isYoung(loadCompleteGDT)) {
+                    return this._ImportStatus(true, 'Loading Completed');
+                }
+                var startCount = _getRowAggregateCount(importSetGr.getUniqueValue());
+                gs.debug('Import Set Pending Rows startCount ' + startCount)
+                this._wait(5);
+                var endCount = _getRowAggregateCount(importSetGr.getUniqueValue());
+                gs.debug('Import Set Pending Rows endCount ' + endCount)
+                if (startCount != endCount) {
+                    return this._ImportStatus(true, 'An import set is currently transforming rows.');
+                }
+            }
+        }
+    },
+
+    _getImportSets: function (importSetId, table) {
+        var importSetGr = new GlideRecord('sys_import_set')
+        importSetGr.orderBy('sys_created_on');
+        importSetGr.addEncodedQuery('state!=processed^state!=cancelled');
+        if (table === 'sys_concurrent_import_set') {
+            importSetGr.addQuery('concurrent_import_set', importSetId);
+        } else {
+            importSetGr.addQuery('sys_id', importSetId);
+        }
+        importSetGr.query();
+        return importSetGr;
+    },
+
+    _getMostRecentImportSetRow: function (importSetId) {
+        var importSetRowGr = new GlideRecord('sys_import_set_row');
+        importSetRowGr.addQuery('sys_import_set', importSetId);
+        importSetRowGr.orderByDesc('sys_created_on');
+        importSetRowGr.setLimit(1);
+        importSetRowGr.query();
+        if (importSetRowGr.next()) {
+            return importSetRowGr;
+        }
+    },
+
+    _getRowAggregateCount: function (importSetId) {
+        var importSetRowGa = new GlideAggregate('sys_import_set_row');
+        importSetRowGa.addQuery('sys_import_set', importSetId);
+        importSetRowGa.addQuery('sys_import_state', 'pending');
+        importSetRowGa.addAggregate('COUNT');
+        importSetRowGa.query();
+        if (importSetRowGa.next()) {
+            var count = importSetRowGa.getAggregate('COUNT');
+            return count;
+        } else {
+            return 0;
+        }
+    },
+
+    _getMostRecentExecution: function (scheduledJobId) {
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('scheduled_import', scheduledJobId);
+        executionGr.orderByDesc('sys_created_on');
+        executionGr.setLimit(1);
+        executionGr.query();
+        if (executionGr.next()) {
+            return executionGr;
+        }
+    },
+
+    _getExecutionsFromContext: function (executionContextId) {
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('execution_context', executionContextId);
+        executionGr.orderByDesc('sys_created_on');
+        executionGr.query();
+        return executionGr
+    },
+    _getLatestExecutionFromContext: function (executionContextId) {
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('execution_context', executionContextId);
+        executionGr.orderByDesc('sys_created_on');
+        executionGr.setLimit(1);
+        executionGr.query();
+        if (executionGr.next()) {
+            return executionGr;
+        }
+    },
+
+
+    _isYoung: function (compareTimeGDT) {
+        if (compareTimeGDT) {
+            var currentGDT = new GlideDateTime();
+            currentGDT.addSeconds(-5);
+            var currentTimeNumeric = currentGDT.getNumericValue();
+            var compareTimeNumeric = compareTimeGDT.getNumericValue();
+            if (currentTimeNumeric < compareTimeNumeric) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    _wait: function (seconds) {
+        var ms = seconds * 1000;
+        var unixtime_ms = new Date().getTime();
+        while (new Date().getTime() < unixtime_ms + ms) { }
+    },
+
+    _ImportStatus: function (running, status) {
+        if (status) {
+            gs.debug(status);
+        }
+        return {
+            importRunning: running,
+            reason: status
+        }
+    },
+
+
+    type: 'MyAppScheduledJobUtils'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-09-14 01:24:58</sys_created_on>
+        <sys_id>4f0eaa2f2f75d110a8ce2b5df699b60d</sys_id>
+        <sys_name>MyAppScheduledJobUtils</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_4f0eaa2f2f75d110a8ce2b5df699b60d</sys_update_name>
+    </sys_script_include>
+</record_update>
