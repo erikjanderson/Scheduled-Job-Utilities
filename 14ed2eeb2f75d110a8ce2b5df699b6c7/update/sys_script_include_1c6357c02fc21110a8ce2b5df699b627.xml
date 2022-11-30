@@ -34,7 +34,10 @@ MyAppScheduledImportReportController.prototype = {
         var importSetId = latestExecutionGr.getValue('import_set');
         var importReport = new MyAppImportSetReport(importSetId);
         importReport.refresh();
-        //importReport.interrogateProgress();
+		var interrogateProgress = gs.getProperty('x_156954_sch_util.interrogate_scheduled_job_progress') == 'true';
+		if(interrogateProgress){
+			importReport.interrogateProgress();
+		}
         jobReport.importSet = importReport;
         return jobReport;
     },

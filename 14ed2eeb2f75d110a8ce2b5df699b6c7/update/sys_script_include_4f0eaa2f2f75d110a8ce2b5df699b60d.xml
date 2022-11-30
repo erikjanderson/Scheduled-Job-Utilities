@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
-        <active>true</active>
+        <active>false</active>
         <api_name>x_156954_sch_util.MyAppScheduledJobUtils</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
@@ -14,17 +14,17 @@ MyAppScheduledJobUtils.prototype = {
 
 
 
-    getJobStatus: function (scheduledJobId) {
-        var recentExecutionGr = this._getMostRecentExecution(scheduledJobId);
-        if (!recentExecutionGr) { return; }
-        var executionContextId = recentExecutionGr.getValue('execution_context');
-        var executionGr = this._getLatestExecutionFromContext(executionContextId);
-        if (!executionGr) { return; }
-        var obj = {};
-        obj.jobInfo = this._getActiveJobInfo(executionGr, scheduledJobId);
-        obj.importProgress = this._getImportSetProgress(executionGr.import_set.getRefRecord());
-        gs.info(JSON.stringify(obj));
-    },
+//     getJobStatus: function (scheduledJobId) {
+//         var recentExecutionGr = this._getMostRecentExecution(scheduledJobId);
+//         if (!recentExecutionGr) { return; }
+//         var executionContextId = recentExecutionGr.getValue('execution_context');
+//         var executionGr = this._getLatestExecutionFromContext(executionContextId);
+//         if (!executionGr) { return; }
+//         var obj = {};
+//         obj.jobInfo = this._getActiveJobInfo(executionGr, scheduledJobId);
+//         obj.importProgress = this._getImportSetProgress(executionGr.import_set.getRefRecord());
+//         gs.info(JSON.stringify(obj));
+//     },
 
 
     checkIfImportRunning: function (scheduledJobId, checkExecutionCreateTime) {
@@ -59,9 +59,9 @@ MyAppScheduledJobUtils.prototype = {
         var jobRel = 'None';
         var jobType = scheduledImportGr.getValue('run_type');
         if (jobType === 'parent' && scheduledImportGr.getValue('parent') === scheduledJobId) {
-            jobRel = 'Child'
+            jobRel = 'Child';
         } else {
-            jobRel = 'Sibling'
+            jobRel = 'Sibling';
         }
         var executionTime = executionGr.getValue('sys_created_on');
         var executionStartTime = new GlideDateTime(executionTime);
@@ -74,7 +74,7 @@ MyAppScheduledJobUtils.prototype = {
             jobRelationship: jobRel,
             jobExecutionTime: executionStartTime.getDisplayValue(),
             jobExecutionAge: diff.getDisplayValue(),
-        }
+        };
         return jobInfo;
     },
 
@@ -84,7 +84,7 @@ MyAppScheduledJobUtils.prototype = {
         var  setProgress = {};
         setProgress.id = importSetGr.getUniqueValue();
         setProgress.table = importSetGr.getRecordClassName();
-        setProgress.report = {}
+        setProgress.report = {};
         setProgress.report = this._getImportReport(importSetGr, setProgress.table);
         //var importSetGr = this._getImportSets(importSetGr.getUniqueValue(), setProgress.table);
 
@@ -93,7 +93,7 @@ MyAppScheduledJobUtils.prototype = {
 
 
     _getImportReport: function (importSetGr, importSetTable) {
-        if (!importSetGr || !importSetTable) { return }
+        if (!importSetGr || !importSetTable) { return; }
         var progressReport = {
             state: importSetGr.getDisplayValue('state'),
             total: 0,
@@ -153,10 +153,10 @@ MyAppScheduledJobUtils.prototype = {
                     return this._ImportStatus(true, 'Loading Completed');
                 }
                 var startCount = _getRowAggregateCount(importSetGr.getUniqueValue());
-                gs.debug('Import Set Pending Rows startCount ' + startCount)
+                gs.debug('Import Set Pending Rows startCount ' + startCount);
                 this._wait(5);
                 var endCount = _getRowAggregateCount(importSetGr.getUniqueValue());
-                gs.debug('Import Set Pending Rows endCount ' + endCount)
+                gs.debug('Import Set Pending Rows endCount ' + endCount);
                 if (startCount != endCount) {
                     return this._ImportStatus(true, 'An import set is currently transforming rows.');
                 }
@@ -165,7 +165,7 @@ MyAppScheduledJobUtils.prototype = {
     },
 
     _getImportSets: function (importSetId, table) {
-        var importSetGr = new GlideRecord('sys_import_set')
+        var importSetGr = new GlideRecord('sys_import_set');
         importSetGr.orderBy('sys_created_on');
         importSetGr.addEncodedQuery('state!=processed^state!=cancelled');
         if (table === 'sys_concurrent_import_set') {
@@ -218,7 +218,7 @@ MyAppScheduledJobUtils.prototype = {
         executionGr.addQuery('execution_context', executionContextId);
         executionGr.orderByDesc('sys_created_on');
         executionGr.query();
-        return executionGr
+        return executionGr;
     },
     _getLatestExecutionFromContext: function (executionContextId) {
         var executionGr = new GlideRecord('sys_import_set_execution');
@@ -258,7 +258,7 @@ MyAppScheduledJobUtils.prototype = {
         return {
             importRunning: running,
             reason: status
-        }
+        };
     },
 
 
