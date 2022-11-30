@@ -10,7 +10,7 @@ The problem is that you just have to know where everything is, and it takes more
 
 ## How to get
 You can fork this branch to import it to you sub-prod instance or your PDI.
-There is no setup involved with this application since its fairly plug and play. The only set up that is potentially requires is to scope the client script down to just a subset of scheduled jobs.
+There is no setup involved with this application since its fairly plug and play. The only set up that is potentially required is to scope the client script down to just a subset of scheduled jobs.
 
 ## Overview
 The application is relativity easy to use since it doesn't really require you to do much of anything other than run a scheduled import.
