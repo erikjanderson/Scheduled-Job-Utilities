@@ -18,6 +18,7 @@ The application is relativity easy to use since it doesn't really require you to
 When the 
 
 When you open a scheduled data import, the Monitor Scheduled Job Progress client script will run a background check to see the state of the execution for either of the current scheduled job or a related one based on the execution context. 
+
 ![](Docs/ScheduledJobUtilImportSetprogress.png)
 
 If a scheduled job is running a concurrent import, the application is able to summarize the entire concurrent import and still give you a comprehensive report of the current status.
