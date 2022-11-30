@@ -67,6 +67,7 @@ MyAppImportSetReport.prototype = {
 
         this.inProgress = inProgress;
         this.progressInterrogated = true;
+        this.progressState = progressState;
     },
 
     //Internal Functions
@@ -201,9 +202,9 @@ MyAppImportSetReport.prototype = {
 		if(importSetGr.get(setId)){
 			return importSetGr;
 		}
-		var concurrentImportSetGr = new GlideRecord('sys_concurrent_import_set')
+		var concurrentImportSetGr = new GlideRecord('sys_concurrent_import_set');
 		if(concurrentImportSetGr.get(setId)){
-			return concurrentImportSetGr
+			return concurrentImportSetGr;
 		}
 	},
 
@@ -218,15 +219,13 @@ MyAppImportSetReport.prototype = {
                 };
             }
         }
-        if (!inProgress) {
-            var importSetCreatedGDT = new GlideDateTime(importSetGr.getValue('sys_created_on'));
-            if (this._isYoung(importSetCreatedGDT)) {
-                return {
-                    inProgress: true,
-                    progressState: 'Import set was just created and data will start loading in soon.'
-                };
-            }
-        }
+		var importSetCreatedGDT = new GlideDateTime(importSetGr.getValue('sys_created_on'));
+		if (this._isYoung(importSetCreatedGDT)) {
+			return {
+				inProgress: true,
+				progressState: 'Import set was just created and data will start loading in.'
+			};
+		}
     },
 
     _interrogateLoadedImportSet: function(importSetGr) {
@@ -234,10 +233,10 @@ MyAppImportSetReport.prototype = {
         if (this._isYoung(loadCompleteGDT)) {
             return {
                 inProgress: true,
-                progressState: 'Loading Completed.'
+                progressState: 'Loading Completed. Transform will begin soon.'
             };
         }
-        if (this.report || this.report.finished) {
+        if (!this.report || !this.report.finished) {
             this.refresh();
         }
         var startCount = this.report.finished;
@@ -278,33 +277,6 @@ MyAppImportSetReport.prototype = {
         var unixtime_ms = new Date().getTime();
         while (new Date().getTime() < unixtime_ms + ms) {}
     },
-
-
-    //VVVVVVVVVV Not Using VVVVVVVVVV
-    // _getLatestExecutionFromContext: function (executionContextId) {
-    // 	var executionGr = new GlideRecord('sys_import_set_execution');
-    // 	executionGr.addQuery('execution_context', executionContextId);
-    // 	executionGr.orderByDesc('sys_created_on');
-    // 	executionGr.setLimit(1);
-    // 	executionGr.query();
-    // 	if (executionGr.next()) {
-    // 		return executionGr;
-    // 	}
-    // },
-
-
-    // _getJobRelationship: function (scheduledImportGr, scheduledImportId) {
-    // 	var jobRel = 'None';
-    // 	var jobType = scheduledImportGr.getValue('run_type');
-    // 	if (jobType === 'parent' && scheduledImportGr.getValue('parent') === scheduledImportId) {
-    // 		jobRel = 'Child'
-    // 	} else if (scheduledImportGr.getUniqueValue() != scheduledImportId) {
-    // 		jobRel = 'Sibling'
-    // 	}
-    // 	return jobRel;
-    // },
-
-
 
     type: 'MyAppImportSetReport'
 };]]></script>
