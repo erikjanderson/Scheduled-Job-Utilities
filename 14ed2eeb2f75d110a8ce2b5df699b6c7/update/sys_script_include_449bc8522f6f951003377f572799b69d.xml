@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.JobUtilsScheduledDataImport</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>JobUtilsScheduledDataImport</name>
+        <script><![CDATA[var JobUtilsScheduledDataImport = Class.create();
+JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJob, {
+
+    getExecutions: function (count) {
+        if (!this.sysId) {
+            return;
+        }
+        var executionGr = this._getMostRecentExecutions(this.sysId, count);
+        if (!executionGr.hasNext()) {
+            return;
+        }
+        while (executionGr.next()) {
+            var importSetId = executionGr.getValue('import_set');
+            var importReport = new JobUtilsImportSetReport(importSetId);
+            importReport.refresh();
+            var interrogateProgress = gs.getProperty('x_156954_sch_util.interrogate_scheduled_job_progress') == 'true';
+            if (interrogateProgress) {
+                importReport.interrogateProgress();
+            }
+            var executionContext = this.addExecutionContext();
+            var definitiveState = ''
+            if (importReport.states.loaded > 0) {
+                definitiveState = 'Loaded';
+            } else if (importReport.states.loading > 0) {
+                definitiveState = 'Loading';
+            } else if (importReport.states.processed > 0) {
+                definitiveState = 'Processed';
+            }
+            executionContext.setJobInProgress(importReport.inProgress, definitiveState);
+            executionContext.setStartTime(new GlideDateTime(importReport.startTime));
+            if (importReport.report.finished > 0) {
+                executionContext.setPercent((importReport.report.finished / importReport.report.total) * 100)
+            }
+            executionContext.setContextRecord(importReport.gr);
+        }
+    },
+
+    //Internal Functions
+
+    _getMostRecentExecutions: function (scheduledImportId, count) {
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('scheduled_import', scheduledImportId);
+        executionGr.orderByDesc('number');
+        if (count) {
+            executionGr.setLimit(count);
+        } else {
+            executionGr.setLimit(1);
+        }
+        executionGr.query();
+        return executionGr;
+    },
+
+
+    type: 'JobUtilsScheduledDataImport'
+});]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-05 16:10:50</sys_created_on>
+        <sys_id>449bc8522f6f951003377f572799b69d</sys_id>
+        <sys_name>JobUtilsScheduledDataImport</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_449bc8522f6f951003377f572799b69d</sys_update_name>
+    </sys_script_include>
+</record_update>

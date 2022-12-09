@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_notif_subscription">
+    <sys_notif_subscription action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <affected_record/>
+        <affected_table/>
+        <condition/>
+        <devices/>
+        <filter/>
+        <name>Personal Notification Whats the Differen</name>
+        <notification display_value="AppSec Notification - Security Elevation">aa046ba20f124010b25fea12ff767ecd</notification>
+        <schedule/>
+        <sys_class_name>sys_notif_subscription</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-11-15 21:39:03</sys_created_on>
+        <sys_id>0fb6dafb2f4b5d1003377f572799b629</sys_id>
+        <sys_name>Personal Notification Whats the Differen</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_notif_subscription_0fb6dafb2f4b5d1003377f572799b629</sys_update_name>
+        <user display_value="Erik Anderson">2f4efe1e2f26111003377f572799b60a</user>
+    </sys_notif_subscription>
+</record_update>

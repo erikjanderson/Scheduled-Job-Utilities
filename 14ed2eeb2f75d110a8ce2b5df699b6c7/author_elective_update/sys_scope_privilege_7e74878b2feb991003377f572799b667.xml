@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege">
+    <sys_scope_privilege action="DELETE">
+        <operation>read</operation>
+        <source_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</source_scope>
+        <status>allowed</status>
+        <sys_class_name>sys_scope_privilege</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-08 13:34:12</sys_created_on>
+        <sys_id>7e74878b2feb991003377f572799b667</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>syslog_transaction</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_scope_privilege_7e74878b2feb991003377f572799b667</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-08 13:34:12</sys_updated_on>
+        <target_name>syslog_transaction</target_name>
+        <target_scope display_value="Global">global</target_scope>
+        <target_type>sys_db_object</target_type>
+    </sys_scope_privilege>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</application>
+        <file_path/>
+        <instance_id>1a082fb5db0d7b849df22f17d4961995</instance_id>
+        <instance_name>dev83910</instance_name>
+        <name>sys_scope_privilege_7e74878b2feb991003377f572799b667</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_scope_privilege"><sys_scope_privilege action="INSERT_OR_UPDATE"><operation>read</operation><source_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</source_scope><status>allowed</status><sys_class_name>sys_scope_privilege</sys_class_name><sys_created_by>erik.anderson</sys_created_by><sys_created_on>2022-12-08 13:34:12</sys_created_on><sys_id>7e74878b2feb991003377f572799b667</sys_id><sys_mod_count>0</sys_mod_count><sys_name>syslog_transaction</sys_name><sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package><sys_policy/><sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope><sys_update_name>sys_scope_privilege_7e74878b2feb991003377f572799b667</sys_update_name><sys_updated_by>erik.anderson</sys_updated_by><sys_updated_on>2022-12-08 13:34:12</sys_updated_on><target_name>syslog_transaction</target_name><target_scope display_value="Global">global</target_scope><target_type>sys_db_object</target_type></sys_scope_privilege></record_update>]]></payload>
+        <payload_hash>274655905</payload_hash>
+        <record_name>syslog_transaction</record_name>
+        <reverted_from/>
+        <source>790394b72fe2911003377f572799b6c4</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-08 13:34:12</sys_created_on>
+        <sys_id>c374878b2feb991003377f572799b66a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>184f1f195060000001</sys_recorded_at>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-08 13:34:12</sys_updated_on>
+        <type>Cross scope privilege</type>
+        <update_guid>0f74878b27eb9910ddbaef9386f33669</update_guid>
+        <update_guid_history>0f74878b27eb9910ddbaef9386f33669:274655905</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-08 14:19:56</sys_created_on>
+        <sys_db_object display_value="" name="sys_scope_privilege">sys_scope_privilege</sys_db_object>
+        <sys_id>27b8d10140cf41608397c796db39e400</sys_id>
+        <sys_metadata>7e74878b2feb991003377f572799b667</sys_metadata>
+        <sys_name>syslog_transaction</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_scope_delete display_value="">4d6086daaeb24a8094f044bcf1be4900</sys_scope_delete>
+        <sys_update_name>sys_scope_privilege_7e74878b2feb991003377f572799b667</sys_update_name>
+        <sys_update_version display_value="sys_scope_privilege_7e74878b2feb991003377f572799b667">c374878b2feb991003377f572799b66a</sys_update_version>
+    </sys_metadata_delete>
+</record_update>

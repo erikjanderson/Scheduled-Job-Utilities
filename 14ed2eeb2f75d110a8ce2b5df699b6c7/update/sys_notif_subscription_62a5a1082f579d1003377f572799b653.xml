@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_notif_subscription">
+    <sys_notif_subscription action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <affected_record/>
+        <affected_table/>
+        <condition/>
+        <devices/>
+        <filter/>
+        <name>Testing Testing</name>
+        <notification display_value="Incident Opened and Unassigned">0d539c30c0a80164013cc05fcf7e5573</notification>
+        <schedule/>
+        <sys_class_name>sys_notif_subscription</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-11-16 12:43:11</sys_created_on>
+        <sys_id>62a5a1082f579d1003377f572799b653</sys_id>
+        <sys_name>Testing Testing</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_notif_subscription_62a5a1082f579d1003377f572799b653</sys_update_name>
+        <user display_value="Erik Anderson">2f4efe1e2f26111003377f572799b60a</user>
+    </sys_notif_subscription>
+</record_update>

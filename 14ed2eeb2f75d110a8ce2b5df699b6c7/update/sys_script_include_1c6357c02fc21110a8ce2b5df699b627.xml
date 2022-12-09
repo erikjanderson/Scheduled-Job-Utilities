@@ -2,13 +2,13 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_156954_sch_util.MyAppScheduledImportReportController</api_name>
+        <api_name>x_156954_sch_util.JobUtilsScheduledImportReportController</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description/>
-        <name>MyAppScheduledImportReportController</name>
-        <script><![CDATA[var MyAppScheduledImportReportController = Class.create();
-MyAppScheduledImportReportController.prototype = {
+        <name>JobUtilsScheduledImportReportController</name>
+        <script><![CDATA[var JobUtilsScheduledImportReportController = Class.create();
+JobUtilsScheduledImportReportController.prototype = {
     initialize: function() {},
 
     getScheduledImportExecutionReport: function(scheduledImportId) {
@@ -32,7 +32,7 @@ MyAppScheduledImportReportController.prototype = {
 
 
         var importSetId = latestExecutionGr.getValue('import_set');
-        var importReport = new MyAppImportSetReport(importSetId);
+        var importReport = new JobUtilsImportSetReport(importSetId);
         importReport.refresh();
 		var interrogateProgress = gs.getProperty('x_156954_sch_util.interrogate_scheduled_job_progress') == 'true';
 		if(interrogateProgress){
@@ -87,13 +87,13 @@ MyAppScheduledImportReportController.prototype = {
     },
 
 
-    type: 'MyAppScheduledImportReportController'
+    type: 'JobUtilsScheduledImportReportController'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-09-15 17:23:48</sys_created_on>
         <sys_id>1c6357c02fc21110a8ce2b5df699b627</sys_id>
-        <sys_name>MyAppScheduledImportReportController</sys_name>
+        <sys_name>JobUtilsScheduledImportReportController</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="DELETE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.JobUtilsProgressReport</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>JobUtilsProgressReport</name>
+        <script><![CDATA[var JobUtilsProgressReport = Class.create();
+JobUtilsProgressReport.prototype = {
+    initialize: function () {
+        this.contexts = [];
+    },
+
+    addNewContext: function () {
+        this.contexts.push(new this.Context());
+        return this.contexts[this.contexts.length - 1];
+    },
+
+
+    Context: function () {
+        this.inProgress = false;
+        this.status = '';
+        this.percentage = '';
+        this.age = {
+            display: '',
+            type: ''
+        };
+        this.startTime = '';
+        this.endTime = '';
+
+
+        this.setJobInProgress = function (inProgress, status) {
+            this.inProgress = inProgress || false;
+            this.status = status;
+        }
+
+        this.setPercent = function (percent) {
+            this.percentage = percent;
+        }
+
+        this.setStartTime = function (gdt) {
+            if (!gdt) {
+                return;
+            }
+            
+            this.startTime = gdt.getDisplayValue();
+            if (new GlideDateTime() > gdt) {
+                this.age.display = GlideDateTime.subtract(gdt, new GlideDateTime()).getDisplayValue();
+                this.age.type = 'past';
+            } else {
+                this.age.display = GlideDateTime.subtract(new GlideDateTime(), gdt).getDisplayValue();
+                this.age.type = 'future';
+            }
+        }
+
+        this.setEndTime = function(gdt) {
+            if (!gdt) {
+                return;
+            }
+            this.endTime = gdt.getDisplayValue();
+        }
+    },
+
+    type: 'JobUtilsProgressReport'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-05 16:12:02</sys_created_on>
+        <sys_id>c3ab44522f6f951003377f572799b6b9</sys_id>
+        <sys_mod_count>20</sys_mod_count>
+        <sys_name>JobUtilsProgressReport</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_c3ab44522f6f951003377f572799b6b9</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-06 14:29:13</sys_updated_on>
+    </sys_script_include>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</application>
+        <file_path/>
+        <instance_id>1a082fb5db0d7b849df22f17d4961995</instance_id>
+        <instance_name>dev83910</instance_name>
+        <name>sys_script_include_c3ab44522f6f951003377f572799b6b9</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_include"&gt;&lt;sys_script_include action="INSERT_OR_UPDATE"&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;active&gt;true&lt;/active&gt;&lt;api_name&gt;x_156954_sch_util.JobUtilsProgressReport&lt;/api_name&gt;&lt;caller_access/&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;description/&gt;&lt;name&gt;JobUtilsProgressReport&lt;/name&gt;&lt;script&gt;&lt;![CDATA[var JobUtilsProgressReport = Class.create();
+JobUtilsProgressReport.prototype = {
+    initialize: function () {
+        this.contexts = [];
+    },
+
+    addNewContext: function () {
+        this.contexts.push(new this.Context());
+        return this.contexts[this.contexts.length - 1];
+    },
+
+
+    Context: function () {
+        this.inProgress = false;
+        this.status = '';
+        this.percentage = '';
+        this.age = {
+            display: '',
+            type: ''
+        };
+        this.startTime = '';
+        this.endTime = '';
+
+
+        this.setJobInProgress = function (inProgress, status) {
+            this.inProgress = inProgress || false;
+            this.status = status;
+        }
+
+        this.setPercent = function (percent) {
+            this.percentage = percent;
+        }
+
+        this.setStartTime = function (gdt) {
+            if (!gdt) {
+                return;
+            }
+            
+            this.startTime = gdt.getDisplayValue();
+            if (new GlideDateTime() &gt; gdt) {
+                this.age.display = GlideDateTime.subtract(gdt, new GlideDateTime()).getDisplayValue();
+                this.age.type = 'past';
+            } else {
+                this.age.display = GlideDateTime.subtract(new GlideDateTime(), gdt).getDisplayValue();
+                this.age.type = 'future';
+            }
+        }
+
+        this.setEndTime = function(gdt) {
+            if (!gdt) {
+                return;
+            }
+            this.endTime = gdt.getDisplayValue();
+        }
+    },
+
+    type: 'JobUtilsProgressReport'
+};]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_include&lt;/sys_class_name&gt;&lt;sys_created_by&gt;erik.anderson&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2022-12-05 16:12:02&lt;/sys_created_on&gt;&lt;sys_id&gt;c3ab44522f6f951003377f572799b6b9&lt;/sys_id&gt;&lt;sys_mod_count&gt;20&lt;/sys_mod_count&gt;&lt;sys_name&gt;JobUtilsProgressReport&lt;/sys_name&gt;&lt;sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util"&gt;14ed2eeb2f75d110a8ce2b5df699b6c7&lt;/sys_package&gt;&lt;sys_policy&gt;read&lt;/sys_policy&gt;&lt;sys_scope display_value="Scheduled Job Utilities"&gt;14ed2eeb2f75d110a8ce2b5df699b6c7&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_include_c3ab44522f6f951003377f572799b6b9&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;erik.anderson&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2022-12-06 14:29:13&lt;/sys_updated_on&gt;&lt;/sys_script_include&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1853358224</payload_hash>
+        <record_name>JobUtilsProgressReport</record_name>
+        <reverted_from/>
+        <source>790394b72fe2911003377f572799b6c4</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-06 14:29:13</sys_created_on>
+        <sys_id>69edb8e22f63191003377f572799b651</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>184e7d73d630000001</sys_recorded_at>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-06 14:29:13</sys_updated_on>
+        <type>Script Include</type>
+        <update_guid>91edb8e2b6631910fa03605bad36e151</update_guid>
+        <update_guid_history>91edb8e2b6631910fa03605bad36e151:-1853358224,f3bc30e27d6319107e12f8095bde17a3:1738672364,2fbc30e27363191050374661659d052a:510149184,5334e4daddaf95108bb1ca643e91983e:-433678040,c173689ab0af951087811bf752241a6b:-509257481,08a2a85a02af95103339460f5944d276:-433678040,c432a05a2caf951008c0986713c1f25d:-1021054447,36226c1aa7af951092d1f995b56f3c9f:-4999867,3212605ac0af95105d946618c295e92d:-1898096413,17026c1a8faf9510f517894c85f58d98:-1497732218,9ae1281a74af95101b58c871168447f3:328815877,e3d1e81a10af9510ed37c67bbb90a7c1:-2088619493,f1a028d699af95103904e5672cc6b085:-433678040,fca028d696af9510d0eb03a8328f5180:-1386740760,63906496cbaf95105f4d3716ce34c858:685147960,a05060d68baf951021827ca42c4732cf:-1640554880,833060d61aaf9510e8a52541245ccdcb:2040288143,d17f5496afaf9510fff9bfb93e85b821:1518760547,9c7f9c92c7af9510dc68a6f1297e2be1:-143491922,6f5f58163aaf95105584dff8cbdc186f:-1183761972,86db8452326f95107aae2ee3f7db9f7c:1491591750</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-08 17:15:30</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_include">sys_script_include</sys_db_object>
+        <sys_id>150f991ed0094d00881ebc7105ed1000</sys_id>
+        <sys_metadata>c3ab44522f6f951003377f572799b6b9</sys_metadata>
+        <sys_name>JobUtilsProgressReport</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_parent/>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_scope_delete display_value="">4d6086daaeb24a8094f044bcf1be4900</sys_scope_delete>
+        <sys_update_name>sys_script_include_c3ab44522f6f951003377f572799b6b9</sys_update_name>
+        <sys_update_version display_value="sys_script_include_c3ab44522f6f951003377f572799b6b9">69edb8e22f63191003377f572799b651</sys_update_version>
+    </sys_metadata_delete>
+</record_update>

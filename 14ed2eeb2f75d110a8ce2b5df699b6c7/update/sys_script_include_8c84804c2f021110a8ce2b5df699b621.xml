@@ -2,13 +2,13 @@
     <sys_script_include action="INSERT_OR_UPDATE">
         <access>package_private</access>
         <active>true</active>
-        <api_name>x_156954_sch_util.MyAppImportSetReport</api_name>
+        <api_name>x_156954_sch_util.JobUtilsImportSetReport</api_name>
         <caller_access/>
         <client_callable>false</client_callable>
         <description/>
-        <name>MyAppImportSetReport</name>
-        <script><![CDATA[var MyAppImportSetReport = Class.create();
-MyAppImportSetReport.prototype = {
+        <name>JobUtilsImportSetReport</name>
+        <script><![CDATA[var JobUtilsImportSetReport = Class.create();
+JobUtilsImportSetReport.prototype = {
     initialize: function(importSet) {
         if (typeof importSet === 'string') {
             importSet = this._getSetGr(importSet);
@@ -76,10 +76,10 @@ MyAppImportSetReport.prototype = {
         for (var key in importSet) {
             this[key] = importSet[key];
         }
-		var setStartTime = new GlideDateTime();
-		setStartTime.setDisplayValue(this.startTime);
+// 		var setStartTime = new GlideDateTime();
+// 		setStartTime.setDisplayValue(this.startTime);
         var gdt = new GlideDateTime();
-        this.age = GlideDateTime.subtract(setStartTime, gdt).getDisplayValue();
+        this.age = GlideDateTime.subtract(this.startTime, gdt).getDisplayValue();
     },
 
     _initializeModel: function(importSetGr) {
@@ -92,8 +92,9 @@ MyAppImportSetReport.prototype = {
         this.link = importSetGr.getLink();
         var setStartTime = new GlideDateTime(importSetGr.getValue('sys_created_on'));
         var gdt = new GlideDateTime();
-        this.startTime = setStartTime.getDisplayValue();
+        this.startTime = new GlideDateTime(importSetGr.getValue('sys_created_on'));
         this.age = GlideDateTime.subtract(setStartTime, gdt).getDisplayValue();
+		this.gr = importSetGr;
     },
 
     _getMostRecentExecution: function(scheduledImportId) {
@@ -278,13 +279,13 @@ MyAppImportSetReport.prototype = {
         while (new Date().getTime() < unixtime_ms + ms) {}
     },
 
-    type: 'MyAppImportSetReport'
+    type: 'JobUtilsImportSetReport'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-09-15 02:19:48</sys_created_on>
         <sys_id>8c84804c2f021110a8ce2b5df699b621</sys_id>
-        <sys_name>MyAppImportSetReport</sys_name>
+        <sys_name>JobUtilsImportSetReport</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>

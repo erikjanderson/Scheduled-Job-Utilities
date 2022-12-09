@@ -14,7 +14,7 @@
     if (g_form.isNewRecord()) {
         return;
     }
-    var ga = new GlideAjax('MyAppScheduledJobAjaxHelper');
+    var ga = new GlideAjax('JobUtilsScheduledJobAjaxHelper');
     ga.addParam('sysparm_name', 'getScheduledImportExecutionReport');
     ga.addParam('scheduledImportId', g_form.getUniqueValue());
     ga.getXML(updateProgress);

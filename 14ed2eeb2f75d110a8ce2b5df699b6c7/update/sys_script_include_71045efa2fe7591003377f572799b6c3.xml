@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.JobUtilsExecutionContext</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>JobUtilsExecutionContext</name>
+        <script><![CDATA[var JobUtilsExecutionContext = Class.create();
+JobUtilsExecutionContext.prototype = {
+    initialize: function(executionContext) {
+		if(executionContext){
+			this.setFromModel(executionContext);
+		}
+    },
+
+	//Model Values
+	inProgress: false,
+	status: '',
+	percentage: '',
+	age: {
+		display: '',
+		type: ''
+	},
+	startTime: '',
+	endTime: '',
+	contextRecord: {
+		sysId: '',
+		display: '',
+		table: '',
+		link: '',
+	},
+	statistics: [
+
+	],
+	
+	//Functions
+	setJobInProgress: function (inProgress, status) {
+		this.inProgress = inProgress || false;
+		this.status = status;
+	},
+
+	setPercent: function (percent) {
+		this.percentage = percent;
+	},
+
+	setStartTime: function (gdt) {
+		if (!gdt) {
+			return;
+		}
+		this.startTime = gdt.getDisplayValue();
+		if (new GlideDateTime() > gdt) {
+			this.age = {
+				display: GlideDateTime.subtract(gdt, new GlideDateTime()).getDisplayValue(),
+				type: 'past'
+			}
+		} else {
+			this.age = {
+				display: GlideDateTime.subtract(new GlideDateTime(), gdt).getDisplayValue(),
+				type: 'future'
+			}
+		}
+	},
+
+	setEndTime: function(gdt) {
+		if (!gdt) {
+			return;
+		}
+		this.endTime = gdt.getDisplayValue();
+	},
+
+	setContextRecord: function(gr){
+		if(!gr){
+			return;
+		}
+		this.contextRecord = {
+			sysId: gr.getUniqueValue(),
+			display: gr.getDisplayValue(),
+			table: gr.getTableName(),
+			link: gr.getLink(),
+		}
+	},
+
+	setStatistic: function(name, value){
+		for(var i = 0; i < this.statistics.length; i++){
+			var stat = this.statistics[i];
+			if(stat.name === name){
+				stat.value = value;
+				return;
+			}
+		}
+		//No existing stat. Adding new one.
+		this.statistics.push({
+			name: name,
+			value: value
+		});
+
+	},
+
+	//Internal Functions
+	setFromModel: function(model){
+		for(var key in model){
+			this[key] = model[key];
+		}
+	},
+
+    type: 'JobUtilsExecutionContext'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-07 15:24:38</sys_created_on>
+        <sys_id>71045efa2fe7591003377f572799b6c3</sys_id>
+        <sys_name>JobUtilsExecutionContext</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_71045efa2fe7591003377f572799b6c3</sys_update_name>
+    </sys_script_include>
+</record_update>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.JobUtilsController</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>JobUtilsController</name>
+        <script><![CDATA[var JobUtilsController = Class.create();
+JobUtilsController.prototype = {
+    initialize: function () {
+    },
+
+
+    getScheduledJobs: function (limit, offset) {
+        if (gs.nil(offset)) {
+            offset = 0;
+        }
+        if (gs.nil(limit)) {
+            limit = 10;
+        }
+        var scheduledJobs = {};
+        var scheduledJobArray = [];
+        //Only get jobs that are upcoming on the schedule (or already active)
+        var dateGenerate = new GlideDateTime();
+        dateGenerate.addDaysUTC(90);
+        var grST = new GlideRecord('sys_trigger');
+        grST.addEncodedQuery("document_key!=NULL^trigger_type!=2");
+        grST.addQuery('next_action', '<=', dateGenerate)
+        grST.orderBy('next_action');
+        grST.chooseWindow(offset, (offset + limit));
+        grST.query();
+        gs.info(grST.getRowCount())
+        while (grST.next()) {
+            var tableName = grST.getValue('document');
+            var sysId = grST.getValue('document_key');
+            var scheduledJob = this._getScheduledJob(sysId, tableName);
+            scheduledJob.getExecutions(1);
+            scheduledJobs[sysId] = scheduledJob;
+        }
+
+        var importSetExecutions = this._getInProgressScheduledImportSetExecutions();
+        importSetExecutions.forEach(scheduledJob, index, )
+        
+
+        for (var sysId in scheduledJobs) {
+            scheduledJobArray.push(scheduledJobs[sysId]);
+        }
+
+
+        return scheduledJobArray;
+    },
+
+    //Internal Functions
+
+    _getScheduledJob: function (sysId, tableName) {
+        if (tableName === 'scheduled_import_set') {
+            return new JobUtilsScheduledDataImport(sysId, tableName);
+        } else {
+            return new JobUtilsScheduledJob(sysId, tableName);
+        }
+    },
+
+    _getInProgressScheduledImportSetExecutions: function () {
+        var  inProgressScheduledImportSets = [];
+        var jobList = {};
+        var importSetExecutionGr = new GlideRecord('sys_import_set_execution');
+        importSetExecutionGr.orderByDesc('sys_created_on');
+        importSetExecutionGr.query();
+        while (importSetExecutionGr.next()) {
+            if(importSetExecutionGr.getValue('scheduled_import') && !jobList[importSetExecutionGr.getValue('scheduled_import')]){
+                jobList[importSetExecutionGr.getValue('scheduled_import')] = true;
+                var scheduledImportSetGr = importSetExecutionGr.scheduled_import.getRefRecord();
+                var scheduledJob = new JobUtilsScheduledDataImport(scheduledImportSetGr);
+                scheduledJob.getExecutions(1);
+                if(scheduledJob.isInProgress()){
+                    inProgressScheduledImportSets.push(scheduledJob);
+                }
+            }
+        }
+        return inProgressScheduledImportSets.reverse();
+    },
+
+    type: 'JobUtilsController'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-08 17:16:17</sys_created_on>
+        <sys_id>f037f74f2f2f991003377f572799b6c1</sys_id>
+        <sys_name>JobUtilsController</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_f037f74f2f2f991003377f572799b6c1</sys_update_name>
+    </sys_script_include>
+</record_update>
