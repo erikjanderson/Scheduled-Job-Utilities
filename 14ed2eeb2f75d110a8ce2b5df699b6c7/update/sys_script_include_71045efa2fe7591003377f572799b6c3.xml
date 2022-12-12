@@ -50,6 +50,7 @@ JobUtilsExecutionContext.prototype = {
 			return;
 		}
 		this.startTime = gdt.getDisplayValue();
+		this.startTimeNumeric = gdt.getNumericValue();
 		if (new GlideDateTime() > gdt) {
 			this.age = {
 				display: GlideDateTime.subtract(gdt, new GlideDateTime()).getDisplayValue(),

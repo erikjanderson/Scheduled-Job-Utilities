@@ -13,7 +13,7 @@ JobUtilsController.prototype = {
     },
 
 
-    getScheduledJobs: function (limit, offset) {
+    getScheduledJobs: function (limit, offset, ignoreEphemeralJobs) {
         if (gs.nil(offset)) {
             offset = 0;
         }
@@ -27,7 +27,8 @@ JobUtilsController.prototype = {
         dateGenerate.addDaysUTC(90);
         var grST = new GlideRecord('sys_trigger');
         grST.addEncodedQuery("document_key!=NULL^trigger_type!=2");
-        grST.addQuery('next_action', '<=', dateGenerate)
+        grST.addQuery('next_action', '<=', dateGenerate);
+        this._filterOutQuickJobs(grST);
         grST.orderBy('next_action');
         grST.chooseWindow(offset, (offset + limit));
         grST.query();
@@ -41,7 +42,13 @@ JobUtilsController.prototype = {
         }
 
         var importSetExecutions = this._getInProgressScheduledImportSetExecutions();
-        importSetExecutions.forEach(scheduledJob, index, )
+        importSetExecutions.forEach(function(scheduledJob, i){
+            gs.info(scheduledJob.sysId);
+            if(scheduledJobs[scheduledJob.sysId]){
+                delete scheduledJobs[scheduledJob.sysId];
+            }
+            scheduledJobArray.push(scheduledJob);
+        })
         
 
         for (var sysId in scheduledJobs) {
@@ -49,7 +56,25 @@ JobUtilsController.prototype = {
         }
 
 
-        return scheduledJobArray;
+        return scheduledJobArray.slice(offset, limit);
+    },
+
+    getScheduledJob: function(sysId, tableName){
+        var scheduledJob = this._getScheduledJob(sysId, tableName);
+        // scheduledJob.getExecutions(1);
+        // scheduledJob.inProgress = scheduledJob.isInProgress();
+        return scheduledJob;
+    },
+
+    refreshScheduledJob: function(scheduledJob){
+        if(scheduledJob.sysClass === 'scheduled_import_set'){
+            scheduledJob = new JobUtilsScheduledDataImport(scheduledJob);
+        }else {
+            scheduledJob = new JobUtilsScheduledJob(scheduledJob);
+        }
+        scheduledJob.clearExecutions();
+        scheduledJob.getExecutions(1);
+        return scheduledJob;
     },
 
     //Internal Functions
@@ -80,6 +105,19 @@ JobUtilsController.prototype = {
             }
         }
         return inProgressScheduledImportSets.reverse();
+    },
+
+    _filterOutQuickJobs: function(grST){
+        if(!grST){
+            return;
+        }
+        var scheduledJobGr = new GlideRecord('sysauto');
+        scheduledJobGr.addQuery('run_type', 'periodically');
+        scheduledJobGr.addQuery('run_period', '<', new GlideDuration('0 00:30:00'));
+        scheduledJobGr.query();
+        while(scheduledJobGr.next()){
+            grST.addQuery('document_key', '!=', scheduledJobGr.getUniqueValue());
+        }
     },
 
     type: 'JobUtilsController'

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function ($scope, $timeout, $interval, spUtil) {
+    /* widget controller */
+    var c = this;
+    if(c.options){
+        c.jobId = c.options.scheduled_job_sysid || 'cc992ce847731110c2b79a62736d43bf';
+        c.jobTable = c.options.scheduled_job_table || 'sysauto_script';
+    }
+    init();
+    function init() {
+        console.log(c.jobId)
+        var input = {
+            action: 'init',
+            table: c.jobTable,
+            sysId: c.jobId
+        }
+        c.server.get(input).then(function (response) {
+            if (response && response.data) {
+                c.scheduledJob = response.data.scheduledJob;
+                refreshProgress();
+            }
+        });
+    }
+
+    function refreshProgress() {
+        if(!c.scheduledJob){
+            return;
+        }
+        var input = {
+            action: 'refreshProgress',
+            scheduledJob: c.scheduledJob
+        }
+
+        c.server.get(input).then(function(response){
+            if(response && response.data){
+                c.scheduledJob = response.data.scheduledJob;
+                countdownNextExecution();
+                if(c.scheduledJob && c.scheduledJob.executionContexts && c.scheduledJob.executionContexts[0] && c.scheduledJob.executionContexts[0].inProgress){
+                    $timeout(function(){
+                       refreshProgress();
+                    }, 3000)
+                }
+            }
+        });
+
+        
+    }
+
+
+
+
+    
+
+    function countdownNextExecution(){
+        
+        if(!c.scheduledJob || !c.scheduledJob.executionContexts || !c.scheduledJob.executionContexts[0] || !c.scheduledJob.executionContexts[0].startTimeNumeric){
+            return;
+        }
+        
+        var startTimeEpoch = c.scheduledJob.executionContexts[0].startTimeNumeric;
+        var currentTimeEpoch = new Date().getTime();
+
+        var diff = startTimeEpoch - currentTimeEpoch;
+        if(diff < 60000 && diff > 0){
+            c.scheduledJob.executionContexts[0].age.display = 'in '+ parseInt(diff / 1000) + ' seconds';
+        }else{
+            c.scheduledJob.executionContexts[0].age.display = moment.duration(diff, 'milliseconds').humanize(false);
+        }
+        if(diff < 0 && !c.scheduledJob.executionContexts[0].inProgress){
+            c.scheduledJob.executionContexts[0].inProgress =  true;
+            $timeout(function(){
+                refreshProgress();
+            }, 1000)
+            //refreshProgress();
+        }
+
+    }
+
+    $interval(countdownNextExecution, 1000);
+
+
+    //this does not work. sys_trigger is apparently a blacklisted table for performance reasons
+    spUtil.recordWatch($scope, "sys_trigger", "", function(event, data){
+       
+    });
+
+
+
+
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.scheduled-job-card {
+    height: 150px;
+    background-color: #f5f5f5;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 0px 10px;
+
+}
+
+
+
+//Progress Indicator
+.progress {
+    position: relative;
+    height: 10px;
+    display: block;
+    width: 100%;
+    background-color: #acece6;
+    border-radius: 2px;
+    background-clip: padding-box;
+    margin: 0.5rem 0 1rem 0;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.progress .determinate {
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    bottom: 0;
+    background-color: #26a69a;
+    transition: width .3s linear;
+}
+
+.progress .indeterminate {
+    background-color: #26a69a;
+}
+
+.progress .indeterminate:before {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    will-change: left, right;
+    -webkit-animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+
+.progress .indeterminate:after {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    will-change: left, right;
+    -webkit-animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    -webkit-animation-delay: 1.15s;
+    animation-delay: 1.15s;
+}
+
+@-webkit-keyframes indeterminate {
+    0% {
+        left: -35%;
+        right: 100%;
+    }
+
+    60% {
+        left: 100%;
+        right: -90%;
+    }
+
+    100% {
+        left: 100%;
+        right: -90%;
+    }
+}
+
+@keyframes indeterminate {
+    0% {
+        left: -35%;
+        right: 100%;
+    }
+
+    60% {
+        left: 100%;
+        right: -90%;
+    }
+
+    100% {
+        left: 100%;
+        right: -90%;
+    }
+}
+
+@-webkit-keyframes indeterminate-short {
+    0% {
+        left: -200%;
+        right: 100%;
+    }
+
+    60% {
+        left: 107%;
+        right: -8%;
+    }
+
+    100% {
+        left: 107%;
+        right: -8%;
+    }
+}
+
+@keyframes indeterminate-short {
+    0% {
+        left: -200%;
+        right: 100%;
+    }
+
+    60% {
+        left: 107%;
+        right: -8%;
+    }
+
+    100% {
+        left: 107%;
+        right: -8%;
+    }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>jobutils_card</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Scheduled Job Card</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  // if(options){
+  //   gs.info('TEST: ' + JSON.stringify(options))
+  // }
+
+
+  if(input){
+    var controller = new JobUtilsController();
+    if(input.action === 'init'){
+      data.scheduledJob = controller.getScheduledJob(input.sysId, input.table);
+    }
+
+    if(input.action === 'refreshProgress'){
+      data.scheduledJob = controller.refreshScheduledJob(input.scheduledJob);
+    }
+
+  }
+  
+
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-12 16:56:40</sys_created_on>
+        <sys_id>3f29d4a847331110c2b79a62736d438b</sys_id>
+        <sys_name>Scheduled Job Card</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sp_widget_3f29d4a847331110c2b79a62736d438b</sys_update_name>
+        <template><![CDATA[<div>
+<!-- your widget template -->
+
+<pre>{{c.scheduledJob | json}}</pre>
+<div class="scheduled-job-card">
+    <h3>{{c.scheduledJob.jobName}}</h3>
+    <span>{{c.scheduledJob.runType.title}} {{c.scheduledJob.runType.display}}</span>
+
+    <div ng-if="c.scheduledJob.executionContexts[0].inProgress" class="progress-tracker">
+        <label>Status: 
+            <strong><a target="_blank" href="{{c.scheduledJob.executionContexts[0].contextRecord.link}}">{{c.scheduledJob.executionContexts[0].contextRecord.display}}</a></strong>
+            is <strong>{{c.scheduledJob.executionContexts[0].status}}</strong>. Total Runtime: {{c.scheduledJob.executionContexts[0].age.display}}
+        
+        </label>
+
+        <div ng-if="!c.scheduledJob.executionContexts[0].percentage" class="progress">
+            <div class="indeterminate"></div>
+        </div>
+
+        <div ng-if="c.scheduledJob.executionContexts[0].percentage" class="progress">
+            <div class="determinate" ng-style="{'width': c.scheduledJob.executionContexts[0].percentage + '%'}"></div>
+        </div>
+
+    </div>
+
+    <div ng-if="!c.scheduledJob.executionContexts[0].inProgress">
+        <label>Next Execution Time: {{c.scheduledJob.executionContexts[0].age.display || 'N/A'}}</label>
+
+    </div>
+</div>
+
+
+</div>]]></template>
+    </sp_widget>
+</record_update>

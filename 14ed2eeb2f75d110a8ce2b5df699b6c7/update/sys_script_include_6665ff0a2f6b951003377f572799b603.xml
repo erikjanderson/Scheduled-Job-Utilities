@@ -12,7 +12,7 @@ JobUtilsScheduledJob.prototype = {
 	initialize: function (scheduledJobGr, table) {
 		if (scheduledJobGr) {
 			if (typeof scheduledJobGr === "string") {
-				if(!table){
+				if (!table) {
 					table = 'sysauto';
 				}
 				scheduledJobGr = this._getGlideRecordWithId(table, scheduledJobGr);
@@ -32,11 +32,12 @@ JobUtilsScheduledJob.prototype = {
 		this.active = (scheduledJobGr.getValue("active") == "1");
 		this.sysScope = this._getReferenceField("sys_scope", scheduledJobGr);
 		this.sysClass = scheduledJobGr.getValue('sys_class_name');
-		this.runType = scheduledJobGr.getValue("run_type");
+		this.runType = this._getRunType(scheduledJobGr)
 		this.nextExecution = this._getNextScheduledExecutionTime();
 	},
 
 	setFromModel: function (model) {
+		
 		for (var key in model) {
 			this[key] = model[key];
 		}
@@ -64,7 +65,7 @@ JobUtilsScheduledJob.prototype = {
 			executionContext.setStartTime(nextAction);
 			transactionCount--;
 		}
-		if(transactionCount <= 0){
+		if (transactionCount <= 0) {
 			return;
 		}
 		//Get past job executions
@@ -85,6 +86,10 @@ JobUtilsScheduledJob.prototype = {
 
 	},
 
+	clearExecutions: function(){
+		this.executionContexts = [];
+	},
+
 	addExecutionContext: function () {
 		if (!this.executionContexts) {
 			this.executionContexts = [];
@@ -93,12 +98,12 @@ JobUtilsScheduledJob.prototype = {
 		return this.executionContexts[this.executionContexts.length - 1];
 	},
 
-	isInProgress: function(){
-		if(!this.executionContexts || this.executionContexts.length < 1){
+	isInProgress: function () {
+		if (!this.executionContexts || this.executionContexts.length < 1) {
 			return false;
 		}
-		for(var i = 0 ; i < this.executionContexts.length; i++){
-			if(this.executionContexts[i].inProgress){
+		for (var i = 0; i < this.executionContexts.length; i++) {
+			if (this.executionContexts[i].inProgress) {
 				return true;
 			}
 		}
@@ -203,6 +208,70 @@ JobUtilsScheduledJob.prototype = {
 		// }
 		// transactionLogGr.query();
 		// return transactionLogGr;
+	},
+
+	_getRunType: function (scheduledJobGr) {
+		var runType = scheduledJobGr.getValue('run_type');
+		var runInfo = {
+			type: runType,
+			title: scheduledJobGr.getDisplayValue('run_type'),
+			display: '',
+		};
+
+		var runTime = scheduledJobGr.getValue('run_time');
+		var runTimeGT = new GlideTime();
+		runTimeGT.setValue(runTime);
+
+
+		if (runType === 'daily') {
+
+			runInfo.display = 'at ' + runTimeGT.getDisplayValue();
+
+		} else if (runType === 'periodically') {
+
+			var runPeriod = scheduledJobGr.getValue('run_period');
+			var duration = new GlideDuration();
+			duration.setValue(runPeriod);
+			runInfo.display = 'every ' + duration.getDisplayValue();
+
+		} else if (runType === 'weekly') {
+
+			var dayOfWeek = scheduledJobGr.getDisplayValue('run_dayofweek');
+			runInfo.display = 'every ' + dayOfWeek + ' at ' + runTimeGT.getDisplayValue();
+
+		} else if (runType === 'monthly') {
+			var dayOfMonth = scheduledJobGr.getValue('run_dayofmonth');
+			if (dayOfMonth) {
+				dayOfMonth = parseInt(dayOfMonth);
+				var nth = function (d) {
+					if (d > 3 && d < 21) return 'th';
+					switch (d % 10) {
+						case 1: return "st";
+						case 2: return "nd";
+						case 3: return "rd";
+						default: return "th";
+					}
+				}
+				runInfo.display = 'on the ' + dayOfMonth + nth(dayOfMonth);
+			}
+		} else if (runType === 'once') {
+
+			var runStart = scheduledJobGr.getValue('run_start');
+			if(runStart){
+				var runStartGdt = new GlideDateTime(runStart);
+				runInfo.display = 'At ' + runStartGdt.getDisplayValue();
+			}
+
+		} else if (runType === 'parent') {
+			var parentJob =  scheduledJobGr.getDisplayValue('parent');
+			runInfo.display = '(' + parentJob + ')';
+		} else if (runType === 'business_calendar_start') {
+
+		} else if (runType === 'business_calendar_end') {
+
+		}
+
+		return runInfo;
 	},
 
 	type: 'JobUtilsScheduledJob'
