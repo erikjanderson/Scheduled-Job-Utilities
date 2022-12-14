@@ -26,21 +26,22 @@ JobUtilsController.prototype = {
         var dateGenerate = new GlideDateTime();
         dateGenerate.addDaysUTC(90);
         var grST = new GlideRecord('sys_trigger');
-        grST.addEncodedQuery("document_key!=NULL^trigger_type!=2");
+        grST.addEncodedQuery("document_key!=NULL^trigger_type!=2^document!=sys_progress_worker");
         grST.addQuery('next_action', '<=', dateGenerate);
-        this._filterOutQuickJobs(grST);
+        this._filterOutQuickJobs(grST);// jobs that execute more frequently than every 30 minutes don't really add much to the UI so i'm filtering these out.
         grST.orderBy('next_action');
-        grST.chooseWindow(offset, (offset + limit));
+        grST.chooseWindow(offset, (offset + limit + 1));
         grST.query();
         gs.info(grST.getRowCount())
         while (grST.next()) {
             var tableName = grST.getValue('document');
             var sysId = grST.getValue('document_key');
             var scheduledJob = this._getScheduledJob(sysId, tableName);
-            scheduledJob.getExecutions(1);
-            scheduledJobs[sysId] = scheduledJob;
+			if(scheduledJob){
+				scheduledJob.getExecutions(1);
+				scheduledJobs[sysId] = scheduledJob;
+			}
         }
-
         var importSetExecutions = this._getInProgressScheduledImportSetExecutions();
         importSetExecutions.forEach(function(scheduledJob, i){
             gs.info(scheduledJob.sysId);
@@ -48,20 +49,17 @@ JobUtilsController.prototype = {
                 delete scheduledJobs[scheduledJob.sysId];
             }
             scheduledJobArray.push(scheduledJob);
-        })
-        
-
+        }) 
         for (var sysId in scheduledJobs) {
             scheduledJobArray.push(scheduledJobs[sysId]);
         }
-
-
+        gs.info('wow: ' + scheduledJobArray.length)
         return scheduledJobArray.slice(offset, limit);
     },
 
     getScheduledJob: function(sysId, tableName){
         var scheduledJob = this._getScheduledJob(sysId, tableName);
-        // scheduledJob.getExecutions(1);
+        scheduledJob.getExecutions(1);
         // scheduledJob.inProgress = scheduledJob.isInProgress();
         return scheduledJob;
     },
@@ -80,6 +78,10 @@ JobUtilsController.prototype = {
     //Internal Functions
 
     _getScheduledJob: function (sysId, tableName) {
+		if(!gs.tableExists(tableName)){
+            gs.info('table no exist: ' + tableName)
+			return;
+		}
         if (tableName === 'scheduled_import_set') {
             return new JobUtilsScheduledDataImport(sysId, tableName);
         } else {

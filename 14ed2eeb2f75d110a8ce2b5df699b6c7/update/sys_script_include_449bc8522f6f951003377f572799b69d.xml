@@ -27,7 +27,7 @@ JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJo
                 importReport.interrogateProgress();
             }
             var executionContext = this.addExecutionContext();
-            var definitiveState = ''
+            var definitiveState = '';
             if (importReport.states.loaded > 0) {
                 definitiveState = 'Loaded';
             } else if (importReport.states.loading > 0) {
@@ -38,7 +38,7 @@ JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJo
             executionContext.setJobInProgress(importReport.inProgress, definitiveState);
             executionContext.setStartTime(new GlideDateTime(importReport.startTime));
             if (importReport.report.finished > 0) {
-                executionContext.setPercent((importReport.report.finished / importReport.report.total) * 100)
+                executionContext.setPercent((importReport.report.finished / importReport.report.total) * 100);
             }
             executionContext.setContextRecord(importReport.gr);
         }

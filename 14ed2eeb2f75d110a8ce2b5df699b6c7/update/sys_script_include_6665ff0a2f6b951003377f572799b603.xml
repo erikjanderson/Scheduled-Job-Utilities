@@ -32,6 +32,7 @@ JobUtilsScheduledJob.prototype = {
 		this.active = (scheduledJobGr.getValue("active") == "1");
 		this.sysScope = this._getReferenceField("sys_scope", scheduledJobGr);
 		this.sysClass = scheduledJobGr.getValue('sys_class_name');
+		this.jobType = scheduledJobGr.getDisplayValue('sys_class_name');
 		this.runType = this._getRunType(scheduledJobGr)
 		this.nextExecution = this._getNextScheduledExecutionTime();
 	},
@@ -169,6 +170,9 @@ JobUtilsScheduledJob.prototype = {
 	},
 
 	_getGlideRecordWithId: function (table, id) {
+		if(!gs.tableExists(table)){
+			return;
+		}
 		var scheduledJobGr = new GlideRecord(table);
 		if (scheduledJobGr.get(id)) {
 			var jobTableName = scheduledJobGr.getValue('sys_class_name');
@@ -187,7 +191,7 @@ JobUtilsScheduledJob.prototype = {
 		if (scheduleGr.next()) {
 			var nextActionGdt = new GlideDateTime(scheduleGr.getValue('next_action'));
 			var nextAction = {
-				value: nextActionGdt.getDisplayValue(),
+				value: nextActionGdt.getNumericValue(),
 				display: GlideDateTime.subtract(new GlideDateTime(), nextActionGdt).getDisplayValue()
 			}
 			return nextAction;
