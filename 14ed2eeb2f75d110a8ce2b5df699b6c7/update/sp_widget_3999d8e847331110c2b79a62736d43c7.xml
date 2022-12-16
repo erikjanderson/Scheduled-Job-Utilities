@@ -106,7 +106,13 @@
         <controller_as>c</controller_as>
         <css>.list-item {&#13;
     margin: 15px 0px;&#13;
-}</css>
+}&#13;
+&#13;
+.scheduled-job-card:hover {&#13;
+    border-color: #8d8d8d;&#13;
+    cursor: pointer;&#13;
+}&#13;
+</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>

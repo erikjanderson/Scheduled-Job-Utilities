@@ -31,9 +31,6 @@ JobUtilsExecutionContext.prototype = {
 		table: '',
 		link: '',
 	},
-	statistics: [
-
-	],
 	
 	//Functions
 	setJobInProgress: function (inProgress, status) {
@@ -84,6 +81,10 @@ JobUtilsExecutionContext.prototype = {
 	},
 
 	setStatistic: function(name, value){
+		if(!this.statistics){
+			this.statistics = [];
+		}
+
 		for(var i = 0; i < this.statistics.length; i++){
 			var stat = this.statistics[i];
 			if(stat.name === name){
@@ -92,6 +93,7 @@ JobUtilsExecutionContext.prototype = {
 			}
 		}
 		//No existing stat. Adding new one.
+		
 		this.statistics.push({
 			name: name,
 			value: value

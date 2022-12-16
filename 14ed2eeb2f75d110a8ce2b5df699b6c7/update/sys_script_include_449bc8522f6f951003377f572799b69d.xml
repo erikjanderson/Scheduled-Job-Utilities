@@ -41,6 +41,9 @@ JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJo
                 executionContext.setPercent((importReport.report.finished / importReport.report.total) * 100);
             }
             executionContext.setContextRecord(importReport.gr);
+            executionContext.setStatistic('Total Rows', importReport.report.total);
+            executionContext.setStatistic('Finished', importReport.report.finished);
+            executionContext.setStatistic('Errors', importReport.report.error);
         }
     },
 

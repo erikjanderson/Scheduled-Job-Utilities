@@ -17,10 +17,14 @@
         }
     }
     moment.relativeTimeThreshold('s', 60);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('h', 25);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('M', 12);
+    moment.relativeTimeThreshold('y', 365);
     moment.relativeTimeThreshold('ss', 0);
     init();
     function init() {
-        
         console.log(c.jobId)
         var input = {
             action: 'init',
@@ -91,6 +95,18 @@
 
     $interval(countdownNextExecution, 1000);
 
+    function autoRefresh(){
+        if(c.scheduledJob && c.scheduledJob.executionContexts && c.scheduledJob.executionContexts[0] && c.scheduledJob.executionContexts[0].inProgress){
+            return
+        }else{
+            init();
+        }
+    }
+
+
+    if(c.autoRefreshFreq){
+        $interval(autoRefresh, c.autoRefreshFreq);
+    }
     
 
 
@@ -120,12 +136,12 @@
 };]]></client_script>
         <controller_as>c</controller_as>
         <css>.scheduled-job-card {
-    //height: 150px;
     background-color: #f5f5f5;
     border-style: solid;
-    border-width: 1px;
+    border-width: 3px;
     border-radius: 5px;
-    padding: 0px 10px;
+    border-color: lightgrey;
+    padding: 0px 10px 10px 5px
 
 }
 
@@ -143,11 +159,21 @@
 }
 .card-progress {
     grid-area: progress;
-    min-height: 50px;
+    min-height: 25px;
 }
 .card-stats {
     grid-area: stats;
-    height: 50px;
+    //min-height: 50px;
+}
+
+.stats-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stats-list div {
+    margin: 0px 10px;
+    display: block;
 }
 
 .scheduled-job-card {
@@ -164,6 +190,9 @@
     column-gap: 20px;
 }
 
+.fa.fa-circle {
+    font-size: 5px;
+}
 
 
 
@@ -369,7 +398,19 @@
         </div>
     </div>
 
-    <div class="card-stats"></div>
+    <div class="card-stats">
+        <div ng-if="c.scheduledJob.executionContexts[0].statistics">
+            <span ng-if="!c.scheduledJob.executionContexts[0].inProgress">Last Execution Info</span>
+            <span ng-if="c.scheduledJob.executionContexts[0].inProgress">Current Execution Info</span>
+            <div class="stats-list">
+                <div><i class="fa fa-circle"></i><strong>Start Time</strong>: {{c.scheduledJob.executionContexts[0].startTime}}</div>
+                <div ng-repeat="stat in c.scheduledJob.executionContexts[0].statistics"><i class="fa fa-circle"></i><strong>{{stat.name}}</strong>: {{stat.value}}</div>
+            </div>
+                
+        </div>
+        
+
+    </div>
     
 </div>
 
