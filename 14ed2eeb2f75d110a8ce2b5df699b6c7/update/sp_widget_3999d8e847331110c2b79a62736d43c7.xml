@@ -108,10 +108,10 @@
     margin: 15px 0px;&#13;
 }&#13;
 &#13;
-.scheduled-job-card:hover {&#13;
-    border-color: #8d8d8d;&#13;
-    cursor: pointer;&#13;
-}&#13;
+// .scheduled-job-card:hover {&#13;
+//     border-color: #8d8d8d;&#13;
+//     cursor: pointer;&#13;
+// }&#13;
 </css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -141,6 +141,10 @@
       data.scheduledJobWidget = $sp.getWidget("jobutils_card", input.options);
     }
 
+    // if(input.action === 'load_widget'){
+    //   data.scheduledJobWidget = $sp.getWidget("jobutils_list_item", input.options);
+    // }
+
   }
 	
 })();]]></script>
@@ -149,16 +153,34 @@
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-12-12 16:58:27</sys_created_on>
         <sys_id>3999d8e847331110c2b79a62736d43c7</sys_id>
+        <sys_mod_count>31</sys_mod_count>
         <sys_name>Scheduled Job List</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sp_widget_3999d8e847331110c2b79a62736d43c7</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-19 18:43:00</sys_updated_on>
         <template><![CDATA[<div>
-    <!-- <pre>{{c.scheduledJobs| json}}</pre> -->
-    <div class="list-item" ng-repeat="scheduledJob in c.scheduledJobs | orderBy:'':false:c.orderWidgets" ng-if="scheduledJob.data">
+  <!-- <pre>{{c.scheduledJobs| json}}</pre> -->
+  <div class="list-item" ng-repeat="scheduledJob in c.scheduledJobs | orderBy:'':false:c.orderWidgets" ng-if="scheduledJob.data">
         <sp-widget widget="scheduledJob"></sp-widget>
     </div>
+  <!-- <table class="table table-hover table-dark">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="scheduledJob in c.scheduledJobs | orderBy:'':false:c.orderWidgets">
+        <sp-widget ng-if="scheduledJob.data" widget="scheduledJob"></sp-widget>
+      </tr>
+    </tbody>
+  </table> -->
 </div>]]></template>
     </sp_widget>
 </record_update>

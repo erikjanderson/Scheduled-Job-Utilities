@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function ($scope, $timeout, $interval, spUtil) {
+    /* widget controller */
+    var c = this;
+    c.data.getNextStartTime = getNextStartTime;
+    if(c.options){
+        // c.jobId = c.options.scheduled_job_sysid || 'cc992ce847731110c2b79a62736d43bf';
+        // c.jobTable = c.options.scheduled_job_table || 'sysauto_script';
+
+        c.jobId = c.options.scheduled_job_sysid || '647c2aa4473b5110c2b79a62736d4371';
+        c.jobTable = c.options.scheduled_job_table || 'scheduled_import_set';
+        c.autoRefreshFreq = parseInt(c.options.auto_refresh_freq) || 0
+        if(c.autoRefreshFreq){
+            c.autoRefreshFreq = c.autoRefreshFreq * 1000
+        }
+    }
+    moment.relativeTimeThreshold('s', 60);
+    moment.relativeTimeThreshold('m', 60);
+    moment.relativeTimeThreshold('h', 25);
+    moment.relativeTimeThreshold('d', 31);
+    moment.relativeTimeThreshold('M', 12);
+    moment.relativeTimeThreshold('y', 365);
+    moment.relativeTimeThreshold('ss', 0);
+    init();
+    function init() {
+        console.log(c.jobId)
+        var input = {
+            action: 'init',
+            table: c.jobTable,
+            sysId: c.jobId
+        }
+        c.server.get(input).then(function (response) {
+            if (response && response.data) {
+                c.scheduledJob = response.data.scheduledJob;
+                if(c.scheduledJob && c.scheduledJob.executionContexts && c.scheduledJob.executionContexts[0] && c.scheduledJob.executionContexts[0].inProgress){
+                    refreshProgress();
+                    
+                }
+                countdownNextExecution();
+            }
+        });
+    }
+
+    function refreshProgress() {
+        if(!c.scheduledJob){
+            return;
+        }
+        var input = {
+            action: 'refreshProgress',
+            scheduledJob: c.scheduledJob
+        }
+
+        c.server.get(input).then(function(response){
+            if(response && response.data){
+                c.scheduledJob = response.data.scheduledJob;
+                if(c.scheduledJob && c.scheduledJob.executionContexts && c.scheduledJob.executionContexts[0] && c.scheduledJob.executionContexts[0].inProgress){
+                    $timeout(function(){
+                       refreshProgress();
+                    }, 3000)
+                }else{
+                    init();
+                    notifyPageOfJobCompletion();
+                }
+            }
+        });
+    }
+    
+
+    function countdownNextExecution(){
+        
+        if(!c.scheduledJob || !c.scheduledJob.executionContexts || !c.scheduledJob.executionContexts[0] || !c.scheduledJob.executionContexts[0].startTimeNumeric){
+            return;
+        }
+        var startTimeEpoch;
+        if(!c.scheduledJob.executionContexts[0].inProgress && c.scheduledJob.nextExecution && c.scheduledJob.nextExecution){
+            startTimeEpoch = c.scheduledJob.nextExecution.value
+        } else if(c.scheduledJob.executionContexts[0].inProgress){
+            startTimeEpoch = c.scheduledJob.executionContexts[0].startTimeNumeric;
+        }
+
+        var currentTimeEpoch = new Date().getTime();
+        var diff = startTimeEpoch - currentTimeEpoch;
+        c.displayTime =  moment.duration(diff, 'milliseconds').humanize(false);
+        //c.scheduledJob.executionContexts[0].age.display = moment.duration(diff, 'milliseconds').humanize(false);
+        if(diff < 0 && !c.scheduledJob.executionContexts[0].inProgress){
+            c.scheduledJob.executionContexts[0].inProgress =  true;
+            $timeout(function(){
+                refreshProgress();
+            }, 1000)
+        }
+
+    }
+
+    $interval(countdownNextExecution, 1000);
+
+    function autoRefresh(){
+        if(c.scheduledJob && c.scheduledJob.executionContexts && c.scheduledJob.executionContexts[0] && c.scheduledJob.executionContexts[0].inProgress){
+            return
+        }else{
+            init();
+        }
+    }
+
+
+    if(c.autoRefreshFreq){
+        $interval(autoRefresh, c.autoRefreshFreq);
+    }
+    
+
+
+    function getNextStartTime(){
+        if(!c.scheduledJob || !c.scheduledJob.executionContexts || !c.scheduledJob.executionContexts[0] || !c.scheduledJob.executionContexts[0].startTimeNumeric) {
+            return;
+        }
+        return c.scheduledJob.executionContexts[0].startTimeNumeric;
+    }
+
+
+    function notifyPageOfJobCompletion(){
+        $scope.$emit("jobs-done", c.scheduledJob);
+    }
+
+
+    //Watch the scheduled job record and refreshProgress the model if something changes.
+    spUtil.recordWatch($scope, c.jobTable, "sys_id=" + c.jobId, function(event, data){
+        
+        init();
+    });
+
+
+
+
+
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>.scheduled-job-card {
+    background-color: #f5f5f5;
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 5px;
+    border-color: lightgrey;
+    padding: 0px 10px 10px 5px
+
+}
+
+//Grid Classes
+.card-header {
+    grid-area: title;
+    min-height: 62px;
+}
+.card-header-details {
+    grid-area: headerDetail;
+    display: grid;
+    justify-items: end;
+    margin-top: 8px;
+    
+}
+.card-progress {
+    grid-area: progress;
+    min-height: 25px;
+}
+.card-stats {
+    grid-area: stats;
+    //min-height: 50px;
+}
+
+.stats-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.stats-list div {
+    margin: 0px 10px;
+    display: block;
+}
+
+.scheduled-job-card {
+    display: grid;
+    grid-template-areas: 
+            "title title title title headerDetail"
+            "progress progress progress progress progress"
+            "stats stats stats stats stats";
+    // grid-template-areas: 
+    //         "a a a"
+    //         "b c c"
+    //         "b c c";
+    row-gap: 5px;
+    column-gap: 20px;
+}
+
+.fa.fa-circle {
+    font-size: 5px;
+}
+
+
+
+//Progress Indicator
+.progress {
+    position: relative;
+    height: 10px;
+    display: block;
+    width: 100%;
+    background-color: #acece6;
+    border-radius: 2px;
+    background-clip: padding-box;
+    margin: 0.5rem 0 1rem 0;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.progress .determinate {
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    bottom: 0;
+    background-color: #26a69a;
+    transition: width .3s linear;
+}
+
+.progress .indeterminate {
+    background-color: #26a69a;
+}
+
+.progress .indeterminate:before {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    will-change: left, right;
+    -webkit-animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+
+.progress .indeterminate:after {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    will-change: left, right;
+    -webkit-animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    -webkit-animation-delay: 1.15s;
+    animation-delay: 1.15s;
+}
+
+@-webkit-keyframes indeterminate {
+    0% {
+        left: -35%;
+        right: 100%;
+    }
+
+    60% {
+        left: 100%;
+        right: -90%;
+    }
+
+    100% {
+        left: 100%;
+        right: -90%;
+    }
+}
+
+@keyframes indeterminate {
+    0% {
+        left: -35%;
+        right: 100%;
+    }
+
+    60% {
+        left: 100%;
+        right: -90%;
+    }
+
+    100% {
+        left: 100%;
+        right: -90%;
+    }
+}
+
+@-webkit-keyframes indeterminate-short {
+    0% {
+        left: -200%;
+        right: 100%;
+    }
+
+    60% {
+        left: 107%;
+        right: -8%;
+    }
+
+    100% {
+        left: 107%;
+        right: -8%;
+    }
+}
+
+@keyframes indeterminate-short {
+    0% {
+        left: -200%;
+        right: 100%;
+    }
+
+    60% {
+        left: 107%;
+        right: -8%;
+    }
+
+    100% {
+        left: 107%;
+        right: -8%;
+    }
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>jobutils_list_item</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Scheduled Job List Item</name>
+        <option_schema>[{"name":"scheduled_job_table","section":"other","label":"Scheduled Job Table","type":"string"},{"name":"scheduled_job_sysid","section":"other","label":"Scheduled Job SysId","type":"string"},{"name":"auto_refresh_freq","section":"other","default_value":"10","label":"Auto refresh card frequency (seconds)","type":"integer"}]</option_schema>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+  // if(options){
+  //   gs.info('TEST: ' + JSON.stringify(options))
+  // }
+
+
+  if(input){
+    var controller = new JobUtilsController();
+    if(input.action === 'init'){
+      data.scheduledJob = controller.getScheduledJob(input.sysId, input.table);
+    }
+
+    if(input.action === 'refreshProgress'){
+      data.scheduledJob = controller.refreshScheduledJob(input.scheduledJob);
+    }
+
+  }
+  
+
+
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-12-16 19:59:44</sys_created_on>
+        <sys_id>1479edfd47731110c2b79a62736d433a</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Scheduled Job List Item</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sp_widget_1479edfd47731110c2b79a62736d433a</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-16 20:20:30</sys_updated_on>
+        <template><![CDATA[<!-- <div> -->
+<!-- <pre>{{c.scheduledJob | json}}</pre> -->
+<!-- <div class="scheduled-job-card">
+    <div class="card-header">
+        <h4>{{c.scheduledJob.jobName}}</h4>
+        <span>{{c.scheduledJob.runType.title}} {{c.scheduledJob.runType.display}}</span>
+    </div>
+    <div class="card-header-details">
+        <span>{{c.scheduledJob.jobType}}
+            
+    </div>
+    
+    <div class="card-progress">
+        <div ng-if="c.scheduledJob.executionContexts[0].inProgress" class="progress-tracker">
+            <label>Status: 
+                <strong><a target="_blank" href="{{c.scheduledJob.executionContexts[0].contextRecord.link}}">{{c.scheduledJob.executionContexts[0].contextRecord.display}}</a></strong>
+                is <strong>{{c.scheduledJob.executionContexts[0].status}}</strong>. Total Runtime: {{c.displayTime}}
+            
+            </label>
+    
+            <div ng-if="!c.scheduledJob.executionContexts[0].percentage" class="progress">
+                <div class="indeterminate"></div>
+            </div>
+    
+            <div ng-if="c.scheduledJob.executionContexts[0].percentage" class="progress">
+                <div class="determinate" ng-style="{'width': c.scheduledJob.executionContexts[0].percentage + '%'}"></div>
+            </div>
+    
+        </div>
+    
+        <div ng-if="!c.scheduledJob.executionContexts[0].inProgress">
+            <label>Next Execution Time: {{c.displayTime || 'N/A'}}</label>
+    
+        </div>
+    </div>
+
+    <div class="card-stats">
+        <div ng-if="c.scheduledJob.executionContexts[0].statistics">
+            <span ng-if="!c.scheduledJob.executionContexts[0].inProgress">Last Execution Info</span>
+            <span ng-if="c.scheduledJob.executionContexts[0].inProgress">Current Execution Info</span>
+            <div class="stats-list">
+                <div><i class="fa fa-circle"></i><strong>Start Time</strong>: {{c.scheduledJob.executionContexts[0].startTime}}</div>
+                <div ng-repeat="stat in c.scheduledJob.executionContexts[0].statistics"><i class="fa fa-circle"></i><strong>{{stat.name}}</strong>: {{stat.value}}</div>
+            </div>
+                
+        </div>
+        
+
+    </div>
+    
+</div> -->
+
+
+
+<!-- 
+</div> -->
+<div>
+    <td>
+        Hello
+    </td>
+    <td>
+        Hello
+    </td>
+    <td>
+        Hello
+    </td>
+    <td>
+        Hello
+    </td>
+    <td>
+        Hello
+    </td>
+</div>
+    
+
+]]></template>
+    </sp_widget>
+</record_update>
