@@ -57,7 +57,8 @@ JobUtilsScheduledJob.prototype = {
 		var transactionCount = count;
 		while (scheduleGr.next()) {
 			var executionContext = this.addExecutionContext();
-			if (scheduleGr.getValue('state') === '1') {
+
+			if (scheduleGr.getValue('state') == '1') {
 				executionContext.setJobInProgress(true, scheduleGr.getDisplayValue('state'));
 			} else {
 				executionContext.setJobInProgress(false, scheduleGr.getDisplayValue('state'));
@@ -119,7 +120,8 @@ JobUtilsScheduledJob.prototype = {
 		}
 		var scheduleGr = new GlideRecord('sys_trigger');
 		scheduleGr.addQuery('document_key', this.sysId);
-		scheduleGr.orderBy('next_action');
+		//scheduleGr.addQuery('trigger_type', '!=', '2');
+		scheduleGr.orderByDesc('next_action');
 		if (count) {
 			scheduleGr.setLimit(count);
 		} else {
@@ -284,10 +286,13 @@ JobUtilsScheduledJob.prototype = {
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-12-05 14:34:03</sys_created_on>
         <sys_id>6665ff0a2f6b951003377f572799b603</sys_id>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>JobUtilsScheduledJob</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_6665ff0a2f6b951003377f572799b603</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 15:25:17</sys_updated_on>
     </sys_script_include>
 </record_update>

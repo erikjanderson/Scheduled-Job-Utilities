@@ -10,64 +10,80 @@
         <script><![CDATA[var JobUtilsScheduledJobAjaxHelper = Class.create();
 JobUtilsScheduledJobAjaxHelper.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
 
-	getScheduledImportExecutionReport: function () {
-		var scheduledImportId = this.getParameter('scheduledImportId');
-		if (scheduledImportId) {
-			var controller = new JobUtilsScheduledImportReportController();
-			var report = controller.getScheduledImportExecutionReport(scheduledImportId);
-			var displayMessage = this._constructDisplayMessage(report);
-			var obj = {
-				report: report,
-				displayMessage: displayMessage
+	// getScheduledImportExecutionReport: function () {
+	// 	var scheduledImportId = this.getParameter('scheduledImportId');
+	// 	if (scheduledImportId) {
+	// 		var controller = new JobUtilsScheduledImportReportController();
+	// 		var report = controller.getScheduledImportExecutionReport(scheduledImportId);
+	// 		var displayMessage = this._constructDisplayMessage(report);
+	// 		var obj = {
+	// 			report: report,
+	// 			displayMessage: displayMessage
+	// 		};
+	// 		return JSON.stringify(obj);
+	// 	}
+	// },
+
+	getScheduledJobImportReport: function(){
+		var scheduledJobId = this.getParameter('scheduledJobId');
+		var tableName = this.getParameter('tableName');
+		if (scheduledJobId && tableName) {
+			var controller = new JobUtilsController();
+			var scheduledJob = controller.getScheduledJob(scheduledJobId, tableName);
+			if(scheduledJob.executionContexts && scheduledJob.executionContexts[0] && scheduledJob.executionContexts[0].inProgress){
+				var html = scheduledJob.executionContexts[0].getFormDisplay();
+				var obj = {
+					reportHtml: html
+				};
+				return JSON.stringify(obj);
 			}
-			return JSON.stringify(obj);
 		}
 	},
 
 
 	//Internal Functions
 
-	_constructDisplayMessage: function (report) {
-		if (report && report.importSet && report.importSet) {
-			var message = '';
-			if (report.relationship === 'None') {
-				message += 'This';
-			} else {
-				message += 'A ' + report.relationship.toLowerCase() + ' job (' + report.name + ')';
-			}
-			message += ' is currently in progress.';
-			message += ' <a href="' + report.importSet.link + '"><strong>' + report.importSet.display + '</strong> </a>';
-			var states = Object.keys(report.importSet.states);
-			if (report.importSet.type === 'sys_import_set') {
-				for (var i = 0; i < states.length; i++) {
-					if (states[i] === 'total') { continue; }
-					message += ' is ' + states[i];
-				}
-			} else {
-				var notFirst = false;
-				message += ' has ' + report.importSet.states.total + ' import set(s) (';
-				for (var state in report.importSet.states) {
-					if (state === 'total') { continue; }
-					if(report.importSet.states[state] > 0){
-						if(notFirst){
-							message += ', ';
-						}
-						message += state + ':' + report.importSet.states[state];
-					}
-					notFirst = true;
-					message += ')';
-				}
-			}
-			message += '';
-			message += '<ul>';
-			message += '<li>Total Runtime: ' + report.importSet.age + '</li>';
-			message += '<li>Total Rows: ' + report.importSet.report.total + '</li>';
-			message += '<li>Processed Rows: ' + report.importSet.report.finished + '</li>';
+	// _constructDisplayMessage: function (report) {
+	// 	if (report && report.importSet && report.importSet) {
+	// 		var message = '';
+	// 		if (report.relationship === 'None') {
+	// 			message += 'This';
+	// 		} else {
+	// 			message += 'A ' + report.relationship.toLowerCase() + ' job (' + report.name + ')';
+	// 		}
+	// 		message += ' is currently in progress.';
+	// 		message += ' <a href="' + report.importSet.link + '"><strong>' + report.importSet.display + '</strong> </a>';
+	// 		var states = Object.keys(report.importSet.states);
+	// 		if (report.importSet.type === 'sys_import_set') {
+	// 			for (var i = 0; i < states.length; i++) {
+	// 				if (states[i] === 'total') { continue; }
+	// 				message += ' is ' + states[i];
+	// 			}
+	// 		} else {
+	// 			var notFirst = false;
+	// 			message += ' has ' + report.importSet.states.total + ' import set(s) (';
+	// 			for (var state in report.importSet.states) {
+	// 				if (state === 'total') { continue; }
+	// 				if(report.importSet.states[state] > 0){
+	// 					if(notFirst){
+	// 						message += ', ';
+	// 					}
+	// 					message += state + ':' + report.importSet.states[state];
+	// 				}
+	// 				notFirst = true;
+	// 				message += ')';
+	// 			}
+	// 		}
+	// 		message += '';
+	// 		message += '<ul>';
+	// 		message += '<li>Total Runtime: ' + report.importSet.age + '</li>';
+	// 		message += '<li>Total Rows: ' + report.importSet.report.total + '</li>';
+	// 		message += '<li>Processed Rows: ' + report.importSet.report.finished + '</li>';
 			
-			message += '</ul>';
-			return message;
-		}
-	},
+	// 		message += '</ul>';
+	// 		return message;
+	// 	}
+	// },
 
 	type: 'JobUtilsScheduledJobAjaxHelper'
 });]]></script>
@@ -75,10 +91,13 @@ JobUtilsScheduledJobAjaxHelper.prototype = Object.extendsObject(global.AbstractA
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-09-15 18:54:35</sys_created_on>
         <sys_id>9938a3c42f461110a8ce2b5df699b644</sys_id>
+        <sys_mod_count>14</sys_mod_count>
         <sys_name>JobUtilsScheduledJobAjaxHelper</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_9938a3c42f461110a8ce2b5df699b644</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 15:15:46</sys_updated_on>
     </sys_script_include>
 </record_update>

@@ -9,11 +9,11 @@
         <name>JobUtilsExecutionContext</name>
         <script><![CDATA[var JobUtilsExecutionContext = Class.create();
 JobUtilsExecutionContext.prototype = {
-    initialize: function(executionContext) {
-		if(executionContext){
+	initialize: function (executionContext) {
+		if (executionContext) {
 			this.setFromModel(executionContext);
 		}
-    },
+	},
 
 	//Model Values
 	inProgress: false,
@@ -31,7 +31,7 @@ JobUtilsExecutionContext.prototype = {
 		table: '',
 		link: '',
 	},
-	
+
 	//Functions
 	setJobInProgress: function (inProgress, status) {
 		this.inProgress = inProgress || false;
@@ -61,15 +61,15 @@ JobUtilsExecutionContext.prototype = {
 		}
 	},
 
-	setEndTime: function(gdt) {
+	setEndTime: function (gdt) {
 		if (!gdt) {
 			return;
 		}
 		this.endTime = gdt.getDisplayValue();
 	},
 
-	setContextRecord: function(gr){
-		if(!gr){
+	setContextRecord: function (gr) {
+		if (!gr) {
 			return;
 		}
 		this.contextRecord = {
@@ -80,20 +80,20 @@ JobUtilsExecutionContext.prototype = {
 		}
 	},
 
-	setStatistic: function(name, value){
-		if(!this.statistics){
+	setStatistic: function (name, value) {
+		if (!this.statistics) {
 			this.statistics = [];
 		}
 
-		for(var i = 0; i < this.statistics.length; i++){
+		for (var i = 0; i < this.statistics.length; i++) {
 			var stat = this.statistics[i];
-			if(stat.name === name){
+			if (stat.name === name) {
 				stat.value = value;
 				return;
 			}
 		}
 		//No existing stat. Adding new one.
-		
+
 		this.statistics.push({
 			name: name,
 			value: value
@@ -101,23 +101,51 @@ JobUtilsExecutionContext.prototype = {
 
 	},
 
+	getFormDisplay: function () {
+		var report = new JobUtilsFormReport();
+		report.setTitle('Scheduled Job Utilities - In Progress');
+		var primarySection = report.addSection('primarySection');
+		var txt = '';
+		if (this.inProgress) {
+			txt = 'This job is currently in progress and has been running for ' + this.age.display + '.';
+			if (this.contextRecord && this.contextRecord.link) {
+				txt += '<a href="' + this.contextRecord.link + '">' + this.contextRecord.display + '</a> (' + this.status + ')';
+			}
+			primarySection.addParagraph(txt);
+		}
+
+		if (Array.isArray(this.statistics) && this.statistics.length > 0) {
+			var statistics = report.addSection('statistics');
+			var ul = statistics.addUnorderedList();
+			for(var i = 0; i < this.statistics.length; i++){
+				var stat = this.statistics[i];
+				ul.push('<bold>' + stat.name + '</bold>: ' + stat.value.toString());
+			}
+		}
+		var html = report.build();
+		return html;
+	},
+
 	//Internal Functions
-	setFromModel: function(model){
-		for(var key in model){
+	setFromModel: function (model) {
+		for (var key in model) {
 			this[key] = model[key];
 		}
 	},
 
-    type: 'JobUtilsExecutionContext'
+	type: 'JobUtilsExecutionContext'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-12-07 15:24:38</sys_created_on>
         <sys_id>71045efa2fe7591003377f572799b6c3</sys_id>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>JobUtilsExecutionContext</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_71045efa2fe7591003377f572799b6c3</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 13:37:34</sys_updated_on>
     </sys_script_include>
 </record_update>

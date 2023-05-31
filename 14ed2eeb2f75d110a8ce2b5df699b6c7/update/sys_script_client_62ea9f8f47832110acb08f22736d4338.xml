@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script_client">
     <sys_script_client action="INSERT_OR_UPDATE">
-        <active>false</active>
+        <active>true</active>
         <applies_extended>true</applies_extended>
         <condition/>
         <description/>
@@ -8,7 +8,7 @@
         <global>true</global>
         <isolate_script>true</isolate_script>
         <messages/>
-        <name>Monitor Scheduled Job Progress</name>
+        <name>Monitor Scheduled Job Progress (New)</name>
         <order/>
         <script><![CDATA[function onLoad() {
     if (g_form.isNewRecord()) {
@@ -16,18 +16,18 @@
     }
     var ga = new GlideAjax('JobUtilsScheduledJobAjaxHelper');
     ga.addParam('sysparm_name', 'getScheduledJobImportReport');
-    ga.addParam('scheduledImportId', g_form.getUniqueValue());
+    ga.addParam('scheduledJobId', g_form.getUniqueValue());
+	ga.addParam('tableName', g_form.getTableName());
     ga.getXML(updateProgress);
 }
 
 function updateProgress(response) {
     var answer = response.responseXML.documentElement.getAttribute("answer");
+	g_form.clearMessages();
     if (answer) {
         var obj = answer.evalJSON(true);
-		
-        g_form.clearMessages();
-        if(obj && obj.report && obj.report.importSet && obj.report.importSet && obj.report.importSet.inProgress){
-            g_form.addInfoMessage(obj.displayMessage);
+        if(obj && obj.reportHtml){
+            g_form.addInfoMessage(obj.reportHtml);
             setTimeout(onLoad, 5000);
         }
 
@@ -35,20 +35,20 @@ function updateProgress(response) {
 }]]></script>
         <sys_class_name>sys_script_client</sys_class_name>
         <sys_created_by>erik.anderson</sys_created_by>
-        <sys_created_on>2022-09-15 18:54:04</sys_created_on>
+        <sys_created_on>2023-05-31 14:51:59</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
-        <sys_id>17c7a7842f461110a8ce2b5df699b67f</sys_id>
-        <sys_mod_count>5</sys_mod_count>
-        <sys_name>Monitor Scheduled Job Progress</sys_name>
+        <sys_id>62ea9f8f47832110acb08f22736d4338</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>Monitor Scheduled Job Progress (New)</sys_name>
         <sys_overrides/>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
-        <sys_update_name>sys_script_client_17c7a7842f461110a8ce2b5df699b67f</sys_update_name>
+        <sys_update_name>sys_script_client_62ea9f8f47832110acb08f22736d4338</sys_update_name>
         <sys_updated_by>erik.anderson</sys_updated_by>
-        <sys_updated_on>2023-05-31 14:56:00</sys_updated_on>
-        <table>scheduled_import_set</table>
+        <sys_updated_on>2023-05-31 15:07:02</sys_updated_on>
+        <table>sysauto</table>
         <type>onLoad</type>
         <ui_type>0</ui_type>
         <view/>

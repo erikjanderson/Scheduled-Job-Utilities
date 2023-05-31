@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_156954_sch_util.JobUtilsFormReport</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>JobUtilsFormReport</name>
+        <script><![CDATA[var JobUtilsFormReport = Class.create();
+JobUtilsFormReport.prototype = {
+    initialize: function() {
+		this.title = 'Scheduled Job Utilities';
+        this.body = {};
+    },
+
+    setTitle: function(title){
+        this.title = title;
+    },
+
+    addSection: function(name){
+        this.body[name] = new this._section();
+
+        return this.body[name];
+    },
+
+
+    build: function(){
+        var html = '';
+
+        if(this.title){
+            html += '<span style="font-size:16px;">';
+                html += this.title;
+            html += '</span>';
+            html += '<hr style="margin: 6px;border-color: #727272;">';
+        }
+        
+        for(var sectionName in this.body){
+            var section = this.body[sectionName];
+            html = this._buildSection(html, section.body);
+
+        }
+
+        return html;
+    },
+
+
+
+    //Internal Functions
+
+    _section: function(){
+        this.body = [];
+        this.addParagraph = function(content){
+            this.body.push({
+                type: 'paragraph',
+                content: content
+            });
+        };
+
+        this.addUnorderedList = function(){
+            var obj = {
+                type: 'unordered_list',
+                content: []
+            };
+            this.body.push(obj);
+
+            return obj.content;
+        };
+
+    },
+
+    _buildSection: function(html, section){
+        for(var i = 0; i < section.length; i++){
+            var subSection = section[i];
+            var text = '';
+
+            if(subSection.type === 'paragraph'){
+                text += '<p>';
+                    text += subSection.content;
+                text += '</p>';
+            }
+
+            if(subSection.type === 'unordered_list'){
+                text += '<ul>';
+                for(var c = 0; c < subSection.content.length; c++){
+                    text += '<li>';
+                        var listItem = subSection.content[c];
+                        text += listItem;
+                    text += '</li>';
+                }
+                text += '</ul>';
+            }
+
+            html += text;
+        }
+
+        return html;
+    },
+
+    type: 'JobUtilsFormReport'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2023-05-31 13:19:07</sys_created_on>
+        <sys_id>8c854bcb47432110acb08f22736d439c</sys_id>
+        <sys_mod_count>3</sys_mod_count>
+        <sys_name>JobUtilsFormReport</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_include_8c854bcb47432110acb08f22736d439c</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 15:05:11</sys_updated_on>
+    </sys_script_include>
+</record_update>
