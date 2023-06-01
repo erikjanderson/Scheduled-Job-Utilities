@@ -11,11 +11,14 @@
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-12-12 16:55:52</sys_created_on>
         <sys_id>440910a847331110c2b79a62736d4353</sys_id>
+        <sys_mod_count>0</sys_mod_count>
         <sys_name>glide.service_portal.resize_text.jobutils.enable_rem_conversion</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_properties_440910a847331110c2b79a62736d4353</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-12 18:41:04</sys_updated_on>
         <type>boolean</type>
         <value>true</value>
         <write_roles/>

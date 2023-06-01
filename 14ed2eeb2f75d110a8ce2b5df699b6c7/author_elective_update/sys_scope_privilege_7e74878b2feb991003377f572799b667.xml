@@ -52,6 +52,7 @@
         <sys_db_object display_value="" name="sys_scope_privilege">sys_scope_privilege</sys_db_object>
         <sys_id>27b8d10140cf41608397c796db39e400</sys_id>
         <sys_metadata>7e74878b2feb991003377f572799b667</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
         <sys_name>syslog_transaction</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_parent/>
@@ -60,5 +61,7 @@
         <sys_scope_delete display_value="">4d6086daaeb24a8094f044bcf1be4900</sys_scope_delete>
         <sys_update_name>sys_scope_privilege_7e74878b2feb991003377f572799b667</sys_update_name>
         <sys_update_version display_value="sys_scope_privilege_7e74878b2feb991003377f572799b667">c374878b2feb991003377f572799b66a</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-12-12 16:46:57</sys_updated_on>
     </sys_metadata_delete>
 </record_update>

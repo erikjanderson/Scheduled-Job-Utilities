@@ -8,7 +8,7 @@
         <global>true</global>
         <isolate_script>true</isolate_script>
         <messages/>
-        <name>Monitor Scheduled Job Progress (New)</name>
+        <name>Monitor Scheduled Job Progress</name>
         <order/>
         <script><![CDATA[function onLoad() {
     if (g_form.isNewRecord()) {
@@ -27,6 +27,7 @@ function updateProgress(response) {
     if (answer) {
         var obj = answer.evalJSON(true);
         if(obj && obj.reportHtml){
+			//jQuery('#scheduled-job-utilities-report').text(obj.reportHtml);
             g_form.addInfoMessage(obj.reportHtml);
             setTimeout(onLoad, 5000);
         }
@@ -39,15 +40,15 @@ function updateProgress(response) {
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>62ea9f8f47832110acb08f22736d4338</sys_id>
-        <sys_mod_count>8</sys_mod_count>
-        <sys_name>Monitor Scheduled Job Progress (New)</sys_name>
+        <sys_mod_count>13</sys_mod_count>
+        <sys_name>Monitor Scheduled Job Progress</sys_name>
         <sys_overrides/>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_client_62ea9f8f47832110acb08f22736d4338</sys_update_name>
         <sys_updated_by>erik.anderson</sys_updated_by>
-        <sys_updated_on>2023-05-31 15:07:02</sys_updated_on>
+        <sys_updated_on>2023-06-01 12:38:03</sys_updated_on>
         <table>sysauto</table>
         <type>onLoad</type>
         <ui_type>0</ui_type>

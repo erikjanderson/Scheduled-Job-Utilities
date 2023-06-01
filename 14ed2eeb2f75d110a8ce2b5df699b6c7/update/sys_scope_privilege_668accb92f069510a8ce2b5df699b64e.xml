@@ -7,11 +7,14 @@
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-09-20 13:15:13</sys_created_on>
         <sys_id>668accb92f069510a8ce2b5df699b64e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
         <sys_name>sys_concurrent_import_set</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_scope_privilege_668accb92f069510a8ce2b5df699b64e</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-10-21 16:30:58</sys_updated_on>
         <target_name>sys_concurrent_import_set</target_name>
         <target_scope display_value="Global">global</target_scope>
         <target_type>sys_db_object</target_type>

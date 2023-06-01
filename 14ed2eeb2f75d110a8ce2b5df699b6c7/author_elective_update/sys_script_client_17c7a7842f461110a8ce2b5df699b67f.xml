@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script_client">
+    <sys_script_client action="DELETE">
+        <active>false</active>
+        <applies_extended>true</applies_extended>
+        <condition/>
+        <description/>
+        <field/>
+        <global>true</global>
+        <isolate_script>true</isolate_script>
+        <messages/>
+        <name>Monitor Scheduled Job Progress</name>
+        <order/>
+        <script><![CDATA[function onLoad() {
+    if (g_form.isNewRecord()) {
+        return;
+    }
+    var ga = new GlideAjax('JobUtilsScheduledJobAjaxHelper');
+    ga.addParam('sysparm_name', 'getScheduledJobImportReport');
+    ga.addParam('scheduledImportId', g_form.getUniqueValue());
+    ga.getXML(updateProgress);
+}
+
+function updateProgress(response) {
+    var answer = response.responseXML.documentElement.getAttribute("answer");
+    if (answer) {
+        var obj = answer.evalJSON(true);
+		
+        g_form.clearMessages();
+        if(obj && obj.report && obj.report.importSet && obj.report.importSet && obj.report.importSet.inProgress){
+            g_form.addInfoMessage(obj.displayMessage);
+            setTimeout(onLoad, 5000);
+        }
+
+    }
+}]]></script>
+        <sys_class_name>sys_script_client</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2022-09-15 18:54:04</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>17c7a7842f461110a8ce2b5df699b67f</sys_id>
+        <sys_mod_count>5</sys_mod_count>
+        <sys_name>Monitor Scheduled Job Progress</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_update_name>sys_script_client_17c7a7842f461110a8ce2b5df699b67f</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 14:56:00</sys_updated_on>
+        <table>scheduled_import_set</table>
+        <type>onLoad</type>
+        <ui_type>0</ui_type>
+        <view/>
+    </sys_script_client>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</application>
+        <file_path/>
+        <instance_id>8f3db847db8a9d508aea21c4059619e6</instance_id>
+        <instance_name>dev136818</instance_name>
+        <name>sys_script_client_17c7a7842f461110a8ce2b5df699b67f</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sys_script_client"&gt;&lt;sys_script_client action="INSERT_OR_UPDATE"&gt;&lt;active&gt;false&lt;/active&gt;&lt;applies_extended&gt;true&lt;/applies_extended&gt;&lt;condition/&gt;&lt;description/&gt;&lt;field/&gt;&lt;global&gt;true&lt;/global&gt;&lt;isolate_script&gt;true&lt;/isolate_script&gt;&lt;messages/&gt;&lt;name&gt;Monitor Scheduled Job Progress&lt;/name&gt;&lt;order/&gt;&lt;script&gt;&lt;![CDATA[function onLoad() {
+    if (g_form.isNewRecord()) {
+        return;
+    }
+    var ga = new GlideAjax('JobUtilsScheduledJobAjaxHelper');
+    ga.addParam('sysparm_name', 'getScheduledJobImportReport');
+    ga.addParam('scheduledImportId', g_form.getUniqueValue());
+    ga.getXML(updateProgress);
+}
+
+function updateProgress(response) {
+    var answer = response.responseXML.documentElement.getAttribute("answer");
+    if (answer) {
+        var obj = answer.evalJSON(true);
+		
+        g_form.clearMessages();
+        if(obj &amp;&amp; obj.report &amp;&amp; obj.report.importSet &amp;&amp; obj.report.importSet &amp;&amp; obj.report.importSet.inProgress){
+            g_form.addInfoMessage(obj.displayMessage);
+            setTimeout(onLoad, 5000);
+        }
+
+    }
+}]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_client&lt;/sys_class_name&gt;&lt;sys_created_by&gt;erik.anderson&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2022-09-15 18:54:04&lt;/sys_created_on&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;17c7a7842f461110a8ce2b5df699b67f&lt;/sys_id&gt;&lt;sys_mod_count&gt;5&lt;/sys_mod_count&gt;&lt;sys_name&gt;Monitor Scheduled Job Progress&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util"&gt;14ed2eeb2f75d110a8ce2b5df699b6c7&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Scheduled Job Utilities"&gt;14ed2eeb2f75d110a8ce2b5df699b6c7&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_client_17c7a7842f461110a8ce2b5df699b67f&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;erik.anderson&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2023-05-31 14:56:00&lt;/sys_updated_on&gt;&lt;table&gt;scheduled_import_set&lt;/table&gt;&lt;type&gt;onLoad&lt;/type&gt;&lt;ui_type&gt;0&lt;/ui_type&gt;&lt;view/&gt;&lt;/sys_script_client&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1065567686</payload_hash>
+        <record_name>Monitor Scheduled Job Progress</record_name>
+        <reverted_from/>
+        <source>0817502447331110c2b79a62736d437b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2023-05-31 14:56:00</sys_created_on>
+        <sys_id>69db138347c32110acb08f22736d4350</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>188724f01020000001</sys_recorded_at>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-05-31 14:56:00</sys_updated_on>
+        <type>Client Script</type>
+        <update_guid>eddb138358c32110611e99f49cd56b4f</update_guid>
+        <update_guid_history>eddb138358c32110611e99f49cd56b4f:1065567686,f9cb93c3ccc32110defc47c6a0b1b38c:1489136518,9a9bdb8392c321104b7be5b64ce5c292:-1942107234,2d6bd783a6c3211091815cd5123240d2:2021584079,cebc0383438321109904455419db0891:-1100421630,9df6dce44d33111050524d609cdfe4b4:-776326059</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_on>2023-06-01 12:37:48</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_client">sys_script_client</sys_db_object>
+        <sys_id>4ac0b90354a44d1c96b84acee0e48b84</sys_id>
+        <sys_metadata>17c7a7842f461110a8ce2b5df699b67f</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Monitor Scheduled Job Progress</sys_name>
+        <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
+        <sys_parent display_value="Scheduled Data Import">a5ef82e0f90211108c8bd16244dfe7fc</sys_parent>
+        <sys_policy/>
+        <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
+        <sys_scope_delete display_value="">4d6086daaeb24a8094f044bcf1be4900</sys_scope_delete>
+        <sys_update_name>sys_script_client_17c7a7842f461110a8ce2b5df699b67f</sys_update_name>
+        <sys_update_version display_value="sys_script_client_17c7a7842f461110a8ce2b5df699b67f">69db138347c32110acb08f22736d4350</sys_update_version>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2023-06-01 12:37:48</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

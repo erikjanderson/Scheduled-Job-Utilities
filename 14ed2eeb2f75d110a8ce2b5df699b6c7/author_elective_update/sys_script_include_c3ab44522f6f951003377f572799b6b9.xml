@@ -168,6 +168,7 @@ JobUtilsProgressReport.prototype = {
         <sys_db_object display_value="" name="sys_script_include">sys_script_include</sys_db_object>
         <sys_id>150f991ed0094d00881ebc7105ed1000</sys_id>
         <sys_metadata>c3ab44522f6f951003377f572799b6b9</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
         <sys_name>JobUtilsProgressReport</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_parent/>
@@ -176,5 +177,7 @@ JobUtilsProgressReport.prototype = {
         <sys_scope_delete display_value="">4d6086daaeb24a8094f044bcf1be4900</sys_scope_delete>
         <sys_update_name>sys_script_include_c3ab44522f6f951003377f572799b6b9</sys_update_name>
         <sys_update_version display_value="sys_script_include_c3ab44522f6f951003377f572799b6b9">69edb8e22f63191003377f572799b651</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-12-12 16:46:57</sys_updated_on>
     </sys_metadata_delete>
 </record_update>

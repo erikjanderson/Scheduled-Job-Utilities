@@ -357,11 +357,14 @@
         <sys_created_by>erik.anderson</sys_created_by>
         <sys_created_on>2022-12-12 16:56:40</sys_created_on>
         <sys_id>3f29d4a847331110c2b79a62736d438b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
         <sys_name>Scheduled Job Card</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sp_widget_3f29d4a847331110c2b79a62736d438b</sys_update_name>
+        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_on>2022-12-16 19:48:07</sys_updated_on>
         <template><![CDATA[<div>
 <!-- <pre>{{c.scheduledJob | json}}</pre> -->
 <div class="scheduled-job-card">
