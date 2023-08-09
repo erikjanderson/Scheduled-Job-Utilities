@@ -16,6 +16,7 @@ JobUtilsExecutionContext.prototype = {
 	},
 
 	//Model Values
+	jobName: '',
 	inProgress: false,
 	status: '',
 	percentage: '',
@@ -33,6 +34,11 @@ JobUtilsExecutionContext.prototype = {
 	},
 
 	//Functions
+
+	setJobName: function(name){
+		this.jobName = name;
+	},
+
 	setJobInProgress: function (inProgress, status) {
 		this.inProgress = inProgress || false;
 		this.status = status;
@@ -112,9 +118,14 @@ JobUtilsExecutionContext.prototype = {
 		var primarySection = report.addSection('primarySection');
 		var txt = '';
 		if (this.inProgress) {
-			txt = 'This job is currently in progress and has been running for ' + this.age.display + '.';
+			if(this.jobName){
+				txt = this.jobName;
+			}else{
+				txt = 'This job';
+			}
+			txt += ' is currently in progress and has been running for ' + this.age.display + '.';
 			if (this.contextRecord && this.contextRecord.link) {
-				txt += '<a href="' + this.contextRecord.link + '">' + this.contextRecord.display + '</a> (' + this.status + ')';
+				txt += ' <a href="' + this.contextRecord.link + '">' + this.contextRecord.display + '</a> (' + this.status + ')';
 			}
 			primarySection.addParagraph(txt);
 		}
@@ -141,16 +152,16 @@ JobUtilsExecutionContext.prototype = {
 	type: 'JobUtilsExecutionContext'
 };]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-12-07 15:24:38</sys_created_on>
         <sys_id>71045efa2fe7591003377f572799b6c3</sys_id>
-        <sys_mod_count>4</sys_mod_count>
+        <sys_mod_count>9</sys_mod_count>
         <sys_name>JobUtilsExecutionContext</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_71045efa2fe7591003377f572799b6c3</sys_update_name>
         <sys_updated_by>erik.anderson</sys_updated_by>
-        <sys_updated_on>2023-06-01 12:40:30</sys_updated_on>
+        <sys_updated_on>2023-08-09 14:10:49</sys_updated_on>
     </sys_script_include>
 </record_update>

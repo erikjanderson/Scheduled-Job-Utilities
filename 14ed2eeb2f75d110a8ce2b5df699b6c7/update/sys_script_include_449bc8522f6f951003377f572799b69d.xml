@@ -35,6 +35,8 @@ JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJo
             } else if (importReport.states.processed > 0) {
                 definitiveState = 'Processed';
             }
+            var jobName = this._getExecutionContextJobName(executionGr);
+            executionContext.setJobName(jobName);
             executionContext.setJobInProgress(importReport.inProgress, definitiveState);
             executionContext.setStartTime(new GlideDateTime(importReport.startTime));
             if (importReport.report.finished > 0) {
@@ -59,23 +61,53 @@ JobUtilsScheduledDataImport.prototype = Object.extendsObject(JobUtilsScheduledJo
             executionGr.setLimit(1);
         }
         executionGr.query();
-        return executionGr;
+
+        if(executionGr.next()){
+            var executionContextId = executionGr.getValue('execution_context');
+            return this._getAllExecutionsRelatedToContext(executionContextId);
+
+        }
     },
+
+    _getAllExecutionsRelatedToContext: function(executionContextId){
+        var executionGr = new GlideRecord('sys_import_set_execution');
+        executionGr.addQuery('execution_context', executionContextId);
+        executionGr.orderByDesc('number');
+        executionGr.query();
+        return executionGr;
+
+    },
+
+    _getExecutionContextJobName: function (executionGr){
+        var jobName = ''
+        var executionJobId = executionGr.getValue('scheduled_import');
+        var executionJobGr = executionGr.scheduled_import.getRefRecord();
+        if(executionJobId === this.sysId){
+            jobName = 'This job';
+        }
+        else if(executionJobGr.getValue('parent') === this.sysId){
+            jobName = executionJobGr.getDisplayValue() + ' (Child)';
+        }else{
+            jobName = executionJobGr.getDisplayValue() + ' (Sibling)';
+        }
+        return jobName;
+    },
+
 
 
     type: 'JobUtilsScheduledDataImport'
 });]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-12-05 16:10:50</sys_created_on>
         <sys_id>449bc8522f6f951003377f572799b69d</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>JobUtilsScheduledDataImport</sys_name>
         <sys_package display_value="Scheduled Job Utilities" source="x_156954_sch_util">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_package>
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_449bc8522f6f951003377f572799b69d</sys_update_name>
         <sys_updated_by>erik.anderson</sys_updated_by>
-        <sys_updated_on>2022-12-16 19:48:07</sys_updated_on>
+        <sys_updated_on>2023-08-09 14:15:09</sys_updated_on>
     </sys_script_include>
 </record_update>
