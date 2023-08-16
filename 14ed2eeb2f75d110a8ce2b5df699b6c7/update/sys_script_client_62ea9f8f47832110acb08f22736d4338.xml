@@ -35,7 +35,7 @@ function updateProgress(response) {
     }
 }]]></script>
         <sys_class_name>sys_script_client</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2023-05-31 14:51:59</sys_created_on>
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
@@ -47,7 +47,7 @@ function updateProgress(response) {
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_client_62ea9f8f47832110acb08f22736d4338</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2023-06-01 12:38:03</sys_updated_on>
         <table>sysauto</table>
         <type>onLoad</type>

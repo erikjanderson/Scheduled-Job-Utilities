@@ -10,7 +10,7 @@
         <enabled>true</enabled>
         <internal_name_for_index>x_156954_sch_util.sp_portal.f1e858a847331110c2b79a62736d4304</internal_name_for_index>
         <sys_class_name>sys_analytics_bucket</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-12-12 16:55:52</sys_created_on>
         <sys_id>c80998a847331110c2b79a62736d4327</sys_id>
         <sys_mod_count>0</sys_mod_count>
@@ -19,7 +19,7 @@
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_analytics_bucket_c80998a847331110c2b79a62736d4327</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2022-12-12 18:41:04</sys_updated_on>
     </sys_analytics_bucket>
 </record_update>

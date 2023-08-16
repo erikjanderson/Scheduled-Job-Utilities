@@ -150,7 +150,7 @@
 })();]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-12-12 16:58:27</sys_created_on>
         <sys_id>3999d8e847331110c2b79a62736d43c7</sys_id>
         <sys_mod_count>31</sys_mod_count>
@@ -159,7 +159,7 @@
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sp_widget_3999d8e847331110c2b79a62736d43c7</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2022-12-19 18:43:00</sys_updated_on>
         <template><![CDATA[<div>
   <!-- <pre>{{c.scheduledJobs| json}}</pre> -->

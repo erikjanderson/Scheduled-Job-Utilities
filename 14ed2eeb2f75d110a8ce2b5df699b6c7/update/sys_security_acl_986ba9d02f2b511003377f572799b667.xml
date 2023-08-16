@@ -9,7 +9,7 @@
         <operation display_value="execute">execute</operation>
         <script/>
         <sys_class_name>sys_security_acl</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-11-29 18:03:09</sys_created_on>
         <sys_id>986ba9d02f2b511003377f572799b667</sys_id>
         <sys_mod_count>0</sys_mod_count>
@@ -18,7 +18,7 @@
         <sys_policy/>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_security_acl_986ba9d02f2b511003377f572799b667</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2022-12-09 14:14:16</sys_updated_on>
         <type display_value="client_callable_script_include">client_callable_script_include</type>
     </sys_security_acl>

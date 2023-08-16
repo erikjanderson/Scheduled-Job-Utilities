@@ -291,7 +291,7 @@ JobUtilsImportSetReport.prototype = {
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_8c84804c2f021110a8ce2b5df699b621</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2023-08-09 13:21:59</sys_updated_on>
     </sys_script_include>
 </record_update>

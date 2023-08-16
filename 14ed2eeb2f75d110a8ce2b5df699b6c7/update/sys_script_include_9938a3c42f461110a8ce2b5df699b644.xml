@@ -88,7 +88,7 @@ JobUtilsScheduledJobAjaxHelper.prototype = Object.extendsObject(global.AbstractA
 	type: 'JobUtilsScheduledJobAjaxHelper'
 });]]></script>
         <sys_class_name>sys_script_include</sys_class_name>
-        <sys_created_by>erik.anderson</sys_created_by>
+        <sys_created_by>admin</sys_created_by>
         <sys_created_on>2022-09-15 18:54:35</sys_created_on>
         <sys_id>9938a3c42f461110a8ce2b5df699b644</sys_id>
         <sys_mod_count>14</sys_mod_count>
@@ -97,7 +97,7 @@ JobUtilsScheduledJobAjaxHelper.prototype = Object.extendsObject(global.AbstractA
         <sys_policy>read</sys_policy>
         <sys_scope display_value="Scheduled Job Utilities">14ed2eeb2f75d110a8ce2b5df699b6c7</sys_scope>
         <sys_update_name>sys_script_include_9938a3c42f461110a8ce2b5df699b644</sys_update_name>
-        <sys_updated_by>erik.anderson</sys_updated_by>
+        <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2023-05-31 15:15:46</sys_updated_on>
     </sys_script_include>
 </record_update>
