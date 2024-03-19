@@ -14,6 +14,5 @@
         <sys_updated_by>admin</sys_updated_by>
         <sys_updated_on>2022-12-09 14:14:16</sys_updated_on>
         <sys_user_role display_value="import_admin" name="import_admin">4a6a6e710a0a0bc000e6426eac13db01</sys_user_role>
-        <transaction_id/>
     </sys_security_acl_role>
 </record_update>
